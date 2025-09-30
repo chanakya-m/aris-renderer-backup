@@ -29,7 +29,7 @@ For $t \in [0, 1]$:
 $$
 P_1(t) = P_1(0) + \int_{0}^{t} (1-s)ds = \frac{1}{2} + \left[s - \frac{s^2}{2}\right]_{0}^{t} = -\frac{t^2}{2} + t + \frac{1}{2}
 $$
-To find the inverse, we set $u = P_1(t)$ and solve for $t$.
+To find the inverse, set $u = P_1(t)$ and solve for $t$.
 
 For $u \in [0, 0.5]$, corresponding to $t \in [-1, 0]$:
 $$
@@ -48,8 +48,57 @@ $$
 t = P_1^{-1}(u) = \begin{cases} \sqrt{2u} - 1, & u \in [0, 0.5] \\ 1 - \sqrt{2 - 2u}, & u \in (0.5, 1] \end{cases}
 $$
 
-### Tent check_warp() Output
+### Tent visualize_warping_ui() Output
 ![Tent Distribution](images/tent.png)
+
+
+## Uniform Disk
+
+For a uniform distribution on a unit disk with radius $R = 1$ and area $A = $\pi R^2 = \pi$, the PDF is constant, $p(x,y) = 1/A = 1/\pi$. We map uniform samples $(u, v) \in [0,1]^2$ to polar coordinates $(r, \theta)$.
+
+The angle $\theta$ is uniformly distributed, so the mapping is direct:
+$$
+\theta = 2\pi v
+$$
+The probability density along the radius is not uniform. It is proportional to the radius, $p(r) \propto r$. Normalizing this PDF over $r \in [0, 1]$ gives $p(r) = 2r$.
+
+The probability density function (PDF) for the radius, $p(r)$, must be normalized so its integral over the domain $[0, 1]$ equals 1.
+
+We have $p(r) = c \cdot r$, where $c$ is the normalization constant. To find $c$:
+$$
+\int_{0}^{1} c \cdot r \,dr = 1
+$$
+$$
+= c \int_{0}^{1} r \,dr = c \left[ \frac{r^2}{2} \right]_{0}^{1} = c \left( \frac{1^2}{2} - \frac{0^2}{2} \right) = c \left( \frac{1}{2} \right) = 1
+$$
+$$
+\implies c = 2
+$$
+So the PDF is:
+$$
+p(r) = 2r
+$$
+
+The CDF for the radius is:
+$$
+P(r) = \int_{0}^{r} 2s\,ds = s^2 \Big|_0^r = r^2
+$$
+To invert the CDF, we set a uniform sample $u = P(r)$ and solve for $r$:
+$$
+u = r^2 \implies r = \sqrt{u}
+$$
+Combining these and converting to Cartesian coordinates gives the final mapping:
+$$
+x = r \cos(\theta) = \sqrt{u} \cos(2\pi v)
+$$
+$$
+y = r \sin(\theta) = \sqrt{u} \sin(2\pi v)
+$$
+
+### Uniform Disk visualize_warping_ui() Output
+![Uniform Disk Distribution](images/uniform_disk.png)
+
+
 
 
 # Point Light Integrator

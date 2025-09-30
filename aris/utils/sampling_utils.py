@@ -27,15 +27,20 @@ def sample_tent(uv: Tensor) -> Tensor:
 def pdf_tent(p: Tensor) -> Tensor:
     return (1 - torch.abs(p[:, 0])) * (1 - torch.abs(p[:, 1]))
 
+
 def sample_uniform_disk(uv: Tensor) -> Tensor:
-    r = None
-    theta = None
+    # u for radius, v for angle.
+    u = uv[:, 0]
+    v = uv[:, 1]
+
+    r = torch.sqrt(u)
+    theta = 2 * torch.pi * v
+
     return torch.stack([r * torch.cos(theta), r * torch.sin(theta)], dim=1)
 
 
 def pdf_uniform_disk(p: Tensor) -> Tensor:
-    return None
-
+    return torch.ones_like(p[:, 0]) / torch.pi
 
 def sample_uniform_sphere(uv: Tensor) -> Tensor:
     theta = None
