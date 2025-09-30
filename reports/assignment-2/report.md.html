@@ -99,6 +99,44 @@ $$
 ![Uniform Disk Distribution](images/uniform_disk.png)
 
 
+## Uniform Sphere
+
+For a uniform distribution on the surface of a unit sphere with radius $R = 1$ and area $A = 4\pi R^2 = 4\pi$, the PDF with respect to surface area is constant, $p(point) = 1/A = 1/(4\pi)$.
+
+The azimuthal angle $\phi$ is uniformly distributed over $[0, 2\pi]$, so its mapping is direct:
+$$
+\phi = 2\pi v
+$$
+The probability density for the polar angle $\theta$ is not uniform. The surface area of a differential band on the sphere is proportional to $\sin\theta$, so the PDF for $\theta$ is $p(\theta) \propto \sin\theta$.
+
+The PDF $p(\theta)$ must be normalized so its integral over the domain $[0, \pi]$ equals 1.
+
+Starting with $p(\theta) = c \cdot \sin\theta$ and solving for the constant $c$:
+$$
+\int_{0}^{\pi} c \cdot \sin\theta \,d\theta = c \left[ -\cos\theta \right]_{0}^{\pi} = c \left( -(-1) - (-1) \right) = 2c = 1
+$$
+$$
+\implies c = \frac{1}{2}
+$$
+So the normalized PDF is $p(\theta) = \frac{1}{2}\sin\theta$.
+
+The CDF for the polar angle is:
+$$
+P(\theta) = \int_{0}^{\theta} \frac{1}{2}\sin s\,ds = \frac{1}{2} \left[ -\cos s \right]_{0}^{\theta} = \frac{1}{2}(1 - \cos\theta)
+$$
+To invert the CDF, we set a uniform sample $u = P(\theta)$ and solve for $\theta$:
+$$
+u = \frac{1}{2}(1 - \cos\theta) \implies 2u = 1 - \cos\theta \implies \cos\theta = 1 - 2u
+$$
+$$
+\theta = \arccos(1 - 2u)
+$$
+Combining these results gives the final mapping from $(u,v)$ to $(x,y,z)$.
+
+### Uniform Disk visualize_warping_ui() Output
+![Uniform Sphere Distribution](images/uniform_sphere.png)
+
+
 
 
 # Point Light Integrator
