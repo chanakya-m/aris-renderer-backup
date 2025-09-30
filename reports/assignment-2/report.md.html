@@ -2,10 +2,7 @@
 
 **CMSC740 Assignment 2**
 
-!!! WARNING
-    Remember to write your name below and remove this warning!
-
-First Name, Last Name
+Chanakya, Maddineni
 
 # Distribution Transformation
 
@@ -16,10 +13,44 @@ First Name, Last Name
         - Write on paper. Take a photo, put it in the `assignment-2` folder, and include with `![](image.jpg)`. It can be draft-like, no need to be formal and organized.
     1. A screenshot of the `test_warp.ipynb` visualization of the sample points.
 
-Your responses here...
+## Tent
 
-!!! NOTE
-    Include a screenshot of the `check_warp()` output.
+The 1D PDF for the tent distribution is $p_1(t) = 1 - |t|$ for $t \in [-1, 1]$. This is a piecewise function:
+$$
+p_1(t) = \begin{cases} 1 + t, & t \in [-1, 0] \\ 1 - t, & t \in [0, 1] \end{cases}
+$$
+The CDF $P_1(t)$ is the integral of the PDF, $\int_{-1}^{t} p_1(s) ds$.
+
+For $t \in [-1, 0]$:
+$$
+P_1(t) = \int_{-1}^{t} (1 + s) ds = \left[s + \frac{s^2}{2}\right]_{-1}^{t} = \left(t + \frac{t^2}{2}\right) - \left(-1 + \frac{1}{2}\right) = \frac{t^2}{2} + t + \frac{1}{2}
+$$
+For $t \in [0, 1]$:
+$$
+P_1(t) = P_1(0) + \int_{0}^{t} (1-s)ds = \frac{1}{2} + \left[s - \frac{s^2}{2}\right]_{0}^{t} = -\frac{t^2}{2} + t + \frac{1}{2}
+$$
+To find the inverse, we set $u = P_1(t)$ and solve for $t$.
+
+For $u \in [0, 0.5]$, corresponding to $t \in [-1, 0]$:
+$$
+u = \frac{t^2}{2} + t + \frac{1}{2} \implies t^2 + 2t + (1 - 2u) = 0
+$$
+The quadratic formula gives $t = \frac{-2 \pm \sqrt{4 - 4(1 - 2u)}}{2} = -1 \pm \sqrt{2u}$. To keep $t$ in the range $[-1, 0]$, we must choose the positive root, so $t = \sqrt{2u} - 1$.
+
+For $u \in (0.5, 1]$, corresponding to $t \in [0, 1]$:
+$$
+u = -\frac{t^2}{2} + t + \frac{1}{2} \implies t^2 - 2t + (2u - 1) = 0
+$$
+The quadratic formula gives $t = \frac{2 \pm \sqrt{4 - 4(2u - 1)}}{2} = 1 \pm \sqrt{2 - 2u}$. To keep $t$ in the range $[0, 1]$, we must choose the negative root, so $t = 1 - \sqrt{2 - 2u}$.
+
+The final inverse function is:
+$$
+t = P_1^{-1}(u) = \begin{cases} \sqrt{2u} - 1, & u \in [0, 0.5] \\ 1 - \sqrt{2 - 2u}, & u \in (0.5, 1] \end{cases}
+$$
+
+### Tent check_warp() Output
+![Tent Distribution](images/tent.png)
+
 
 # Point Light Integrator
 

@@ -16,14 +16,16 @@ def pdf_uniform_square(p: Tensor) -> Tensor:
 
 def sample_tent(uv: Tensor) -> Tensor:
     def sample_tent_1d(u: Tensor) -> Tensor:
-        return None
+        return torch.where(
+            u < 0.5,
+            torch.sqrt(2 * u) - 1,
+            1 - torch.sqrt(2 - 2 * u)
+        )
 
     return torch.stack([sample_tent_1d(uv[:, 0]), sample_tent_1d(uv[:, 1])], dim=1)
 
-
 def pdf_tent(p: Tensor) -> Tensor:
-    return None
-
+    return (1 - torch.abs(p[:, 0])) * (1 - torch.abs(p[:, 1]))
 
 def sample_uniform_disk(uv: Tensor) -> Tensor:
     r = None
