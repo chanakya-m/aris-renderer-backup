@@ -30,13 +30,12 @@ class PointLightIntegrator(Integrator):
             return result
 
         points = geometry.points[hit_mask] # (M,3)
-        sh_normals = geometry.sh_normals[hit_mask]
 
         # Shadow rays
         x2p = self.position - points  # (M,3)
         x2p_norm = F.normalize(x2p, p=2, dim=1)
         offset = 1e-4
-        shadow_ray_o = points + offset
+        shadow_ray_o = points + offset * geometry.sh_normals[hit_mask]
         shadow_ray_d = x2p_norm
         shadow_geometry = scene.geometry.ray_intersect(shadow_ray_o, shadow_ray_d)
 

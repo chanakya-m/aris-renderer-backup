@@ -56,10 +56,22 @@ $$
 
 For a uniform distribution on a unit disk with radius $R = 1$ and area $A = $\pi R^2 = \pi$, the PDF is constant, $p(x,y) = 1/A = 1/\pi$. We map uniform samples $(u, v) \in [0,1]^2$ to polar coordinates $(r, \theta)$.
 
-The angle $\theta$ is uniformly distributed, so the mapping is direct:
+The PDF for the angle $\theta$ is uniform, $p(\theta) = 1/(2\pi)$.
+
+The CDF is the integral of the PDF:
 $$
-\theta = 2\pi v
+P(\theta) = \int_{0}^{\theta} \frac{1}{2\pi} ds = \frac{1}{2\pi} [s]_0^\theta = \frac{\theta}{2\pi}
 $$
+To find the inverse, we set a uniform sample $v = P(\theta)$ and solve for $\theta$:
+$$
+v = \frac{\theta}{2\pi}
+$$
+$$
+\implies \theta = 2\pi v
+$$
+
+
+
 The probability density along the radius is not uniform. It is proportional to the radius, $p(r) \propto r$. Normalizing this PDF over $r \in [0, 1]$ gives $p(r) = 2r$.
 
 The probability density function (PDF) for the radius, $p(r)$, must be normalized so its integral over the domain $[0, 1]$ equals 1.
@@ -103,11 +115,19 @@ $$
 
 For a uniform distribution on the surface of a unit sphere with radius $R = 1$ and area $A = 4\pi R^2 = 4\pi$, the PDF with respect to surface area is constant, $p(point) = 1/A = 1/(4\pi)$.
 
-The azimuthal angle $\phi$ is uniformly distributed over $[0, 2\pi]$, so its mapping is direct:
+The PDF for the azimuthal angle $\phi$ is uniform, $p(\phi) = 1/(2\pi)$.
+
+The CDF is the integral of the PDF:
 $$
-\phi = 2\pi v
+P(\phi) = \int_{0}^{\phi} \frac{1}{2\pi} ds = \frac{1}{2\pi} [s]_0^\phi = \frac{\phi}{2\pi}
 $$
-The probability density for the polar angle $\theta$ is not uniform. The surface area of a differential band on the sphere is proportional to $\sin\theta$, so the PDF for $\theta$ is $p(\theta) \propto \sin\theta$.
+To find the inverse, we set a uniform sample $v = P(\phi)$ and solve for $\phi$:
+$$
+v = \frac{\phi}{2\pi}
+$$
+$$
+\implies \phi = 2\pi v
+$$
 
 The PDF $p(\theta)$ must be normalized so its integral over the domain $[0, \pi]$ equals 1.
 
@@ -138,7 +158,6 @@ $$
 
 ## Uniform Hemisphere
 
-
 For a uniform distribution on the surface of an upper unit hemisphere (where $z \ge 0$), the surface area is half that of a full sphere, so $A = 2\pi$. The PDF with respect to surface area is constant, $p(point) = 1/A = 1/(2\pi)$.
 
 As with the full sphere, the distribution is separable in spherical coordinates $(\theta, \phi)$, and the azimuthal angle $\phi$ is uniformly distributed over $[0, 2\pi]$. The mapping is therefore the same:
@@ -168,10 +187,117 @@ $$
 ### Uniform Hemisphere visualize_warping_ui() Output
 ![Uniform Hemisphere Distribution](images/uniform_hemisphere.png)
 
+
+## Cosine Hemisphere
+The PDF for a cosine-weighted distribution on the upper hemisphere is $p(\theta, \phi) = \frac{\cos\theta}{\pi}$.
+
+To generate samples with this distribution, we can sample a unit disk uniformly and project the points vertically onto the hemisphere.
+
+This works because the projection of a differential area $dA$ on the hemisphere onto the $xy$-plane is $dA \cos\theta$. Therefore, sampling uniformly over the projected area (the disk) results in a distribution on the hemisphere's surface area that is proportional to $\cos\theta$, which is the desired distribution.
+
+The implementation first generates a uniform sample $(x_d, y_d)$ on a unit disk from uniform inputs $(u, v)$. This uses the inverse CDF method for the radius, as derived previously:
+$$
+r = \sqrt{u} \quad \text{and} \quad \phi = 2\pi v
+$$
+The point on the disk is $(x_d, y_d) = (r\cos\phi, r\sin\phi)$.
+
+The final point on the hemisphere $(x,y,z)$ is found by setting its $(x,y)$ coordinates to the disk point's coordinates and solving for $z$ using the unit sphere equation $x^2+y^2+z^2=1$.
+$$
+x = r \cos\phi = \sqrt{u} \cos(2\pi v)
+$$
+$$
+y = r \sin\phi = \sqrt{u} \sin(2\pi v)
+$$
+$$
+z = \sqrt{1 - (x^2+y^2)} = \sqrt{1 - r^2}
+$$
+Substituting $r=\sqrt{u}$:
+$$
+z = \sqrt{1 - (\sqrt{u})^2} = \sqrt{1-u}
+$$
+These three equations give the final mapping from $(u,v)$ to the Cartesian coordinates of a cosine-distributed point on the hemisphere.
+
+
+## Beckmann
+
+The PDF for the azimuthal angle $\phi$ is uniform, $p(\phi) = 1/(2\pi)$.
+
+The CDF is the integral of the PDF:
+$$
+P(\phi) = \int_{0}^{\phi} \frac{1}{2\pi} ds = \frac{1}{2\pi} [s]_0^\phi = \frac{\phi}{2\pi}
+$$
+To find the inverse, we set a uniform sample $v = P(\phi)$ and solve for $\phi$:
+$$
+v = \frac{\phi}{2\pi}
+$$
+$$
+\implies \phi = 2\pi v
+$$
+
+
+The PDF for the polar angle $\theta$ is derived from the full solid angle PDF, $p(\theta, \phi)\sin\theta$. With $p(\phi)$ separated, we have:
+$$
+p(\theta) = \frac{2e^{-\tan^2\theta / \alpha^2}}{\alpha^2\cos^3\theta} \sin\theta
+$$
+To find the CDF, $P(\theta) = \int_{0}^{\theta} p(s)ds$, we use the substitution $x = \cos s \implies dx = -\sin s \,ds$. It also gives us $\tan^2 s = \frac{1-x^2}{x^2}$, and the integration bounds change from $[0, \theta]$ to $[1, \cos\theta]$.
+$$
+P(\theta) = \int_{1}^{\cos\theta} \frac{2}{\alpha^2 x^3} e^{-(\frac{1-x^2}{x^2})/\alpha^2} (-dx) = \int_{\cos\theta}^{1} \frac{2}{\alpha^2 x^3} e^{-(\frac{1}{x^2}-1)/\alpha^2} dx
+$$
+This integral is in the form $\int f'(x)e^{f(x)}dx$ where $f(x) = -\frac{1}{\alpha^2}(\frac{1}{x^2}-1)$. The integral evaluates to $e^{f(x)}$.
+$$
+P(\theta) = \left[ e^{-\frac{1}{\alpha^2}(\frac{1}{x^2}-1)} \right]_{\cos\theta}^{1} = e^{-\frac{1}{\alpha^2}(\frac{1}{1^2}-1)} - e^{-\frac{1}{\alpha^2}(\frac{1}{\cos^2\theta}-1)} = 1 - e^{-\tan^2\theta/\alpha^2}
+$$
+To invert the CDF, we set a uniform sample $u = P(\theta)$ and solve for $\theta$.
+$$
+u = 1 - e^{-\tan^2\theta/\alpha^2}
+$$
+$$
+\implies 1-u = e^{-\tan^2\theta/\alpha^2}
+$$
+$$
+\implies \ln(1-u) = -\frac{\tan^2\theta}{\alpha^2}
+$$
+$$
+\implies \tan^2\theta = -\alpha^2\ln(1-u)
+$$
+Using the identity $\tan^2\theta = \frac{1}{\cos^2\theta}-1$, we can solve for $\cos\theta$:
+$$
+\frac{1}{\cos^2\theta}-1 = -\alpha^2\ln(1-u) \implies \frac{1}{\cos^2\theta} = 1 - \alpha^2\ln(1-u)
+$$
+$$
+\cos^2\theta = \frac{1}{1 - \alpha^2\ln(1-u)}
+$$
+This gives us the mapping from $u$ to $\cos^2\theta$. Since the final Cartesian coordinates only require $\cos\theta$ and $\sin\theta$, we can compute them directly without explicitly solving for $\theta$. For the upper hemisphere where $\theta \in [0, \pi/2]$, $\cos\theta$ is positive.
+$$
+\cos\theta = \sqrt{\frac{1}{1 - \alpha^2\ln(1-u)}}
+$$
+The value for $\sin\theta$ is then found using the identity $\sin\theta = \sqrt{1 - \cos^2\theta}$. These components, along with $\phi$, are used in the standard spherical-to-Cartesian conversion to get the final sample point $(x,y,z)$.
+
+
+### Beckmann, $\alpha = 0.1$ visualize_warping_ui() Output
+![Beckmann, $\alpha = 0.1$](images/beckmann_0.1.png)
+
+### Beckmann, $\alpha = 0.5$ visualize_warping_ui() Output
+![Beckmann, $\alpha = 0.5$](images/beckmann_0.5.png)
+
+### Beckmann, $\alpha = 0.9$ visualize_warping_ui() Output
+![Beckmann, $\alpha = 0.9$](images/beckmann_0.9.png)
+
+
 # Point Light Integrator
 
-!!! NOTE
-    Briefly describe how your code works. Include the rendering (PNG image) as well.
+My implementation first casts camera rays into the scene using `ray_intersect()` to find the initial intersection points and their corresponding surface normals. This returns a `hit_mask` that identifies which camera rays hit an object.
+
+For every point that was hit, I then construct a shadow ray originating from the intersection point and pointing towards the light source. An offset of magnitude 1e-4 (about a thousandth of the scene dimensions) is added along the surface normal to the shadow ray's origin to prevent self-intersection.
+
+These shadow rays are then traced in the scene with `ray_intersect()`. If a shadow ray hits an object, the original point is not visible to the light source. I then invert this result to create a `lit_mask` that marks only the points that are both visible to the camera and have a clear line of sight to the light.
+
+The lighting formula is applied only to the points selected by the `lit_mask`. The final radiance for each lit point is calculated with the formula in the instructions, which uses the light's energy, the decrease in energy on the surface based on the squared distance to the light, and the the cosine of the angle between the surface normal and the light direction.
+
+
+## Rendered Image:
+![Point Light Rendering](images/point_light.png)
+
 
 # Ambient Occlusion Integrator
 

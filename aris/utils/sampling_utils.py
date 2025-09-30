@@ -76,16 +76,56 @@ def pdf_uniform_hemisphere(p: Tensor) -> Tensor:
 
 
 def sample_cosine_hemisphere(uv: Tensor) -> Tensor:
-    return None
+    u = uv[:, 0]
+    v = uv[:, 1]
 
+    r = torch.sqrt(u)
+    phi = 2 * torch.pi * v
+
+    x_disk = r * torch.cos(phi)
+    y_disk = r * torch.sin(phi)
+
+    z = torch.sqrt(1 - r*r + 1e-8)
+
+    return torch.stack([x_disk, y_disk, z], dim=1)
 
 def pdf_cosine_hemisphere(p: Tensor) -> Tensor:
-    return None
+    return torch.clamp(p[:, 2], min=0.0) / torch.pi
 
 
-def sample_beckmann(uv: Tensor, alpha: Union[Tensor, float]) -> Tensor:
-    return None
+def sample_beckmann(uv: Tensor, alpha: float) -> Tensor:
+    u = uv[:, 0]
+    v = uv[:, 1]
 
+    phi = 2 * torch.pi * v
 
-def pdf_beckmann(p: Tensor, alpha: Union[Tensor, float]) -> Tensor:
-    return None
+    log_u = torch.log((1 - u) + 1e-8)
+    cos_sq_theta = 1 / (1 - alpha * alpha * log_u)
+
+    cos_theta = torch.sqrt(cos_sq_theta)
+    sin_theta = torch.sqrt(torch.clamp(1 - cos_sq_theta, min=0.0))
+
+    x = sin_theta * torch.cos(phi)
+    y = sin_theta * torch.sin(phi)
+    z = cos_theta
+
+    return torch.stack([x, y, z], dim=1)
+
+def pdf_beckmann(p: Tensor, alpha: float) -> Tensor:
+    cos_theta = p[:, 2]
+    cos_theta = torch.clamp(cos_theta, min=1e-8)
+
+    cos_cubed_theta = cos_theta * cos_theta * cos_theta
+
+    tan_sq_theta = (1 - cos_theta * cos_theta) / (cos_theta * cos_theta)
+
+    alpha_sq = alpha * alpha
+
+    exp = -tan_sq_theta / alpha_sq
+    numerator = torch.exp(exp)
+    denominator = torch.pi * alpha_sq * cos_cubed_theta
+
+    pdf = numerator / denominator
+    pdf[p[:, 2] < 0] = 0.0
+
+    return pdf
