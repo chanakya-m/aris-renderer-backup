@@ -131,13 +131,42 @@ $$
 $$
 \theta = \arccos(1 - 2u)
 $$
-Combining these results gives the final mapping from $(u,v)$ to $(x,y,z)$.
 
-### Uniform Disk visualize_warping_ui() Output
+### Uniform Sphere visualize_warping_ui() Output
 ![Uniform Sphere Distribution](images/uniform_sphere.png)
 
 
+## Uniform Hemisphere
 
+
+For a uniform distribution on the surface of an upper unit hemisphere (where $z \ge 0$), the surface area is half that of a full sphere, so $A = 2\pi$. The PDF with respect to surface area is constant, $p(point) = 1/A = 1/(2\pi)$.
+
+As with the full sphere, the distribution is separable in spherical coordinates $(\theta, \phi)$, and the azimuthal angle $\phi$ is uniformly distributed over $[0, 2\pi]$. The mapping is therefore the same:
+$$
+\phi = 2\pi v
+$$
+The probability density for the polar angle $\theta$ is still proportional to the surface area of a horizontal slice, so $p(\theta) \propto \sin\theta$. However, the domain is now restricted to $\theta \in [0, \pi/2]$ for the upper hemisphere, so we must re-normalize the PDF over the new domain.
+
+Solving for $c$ in $p(\theta) = c \cdot \sin\theta$:
+$$
+\int_{0}^{\pi/2} c \cdot \sin\theta \,d\theta = c \left[ -\cos\theta \right]_{0}^{\pi/2} = c \left( - (0) - (-1) \right) = c = 1
+$$
+The normalized PDF is therefore $p(\theta) = \sin\theta$ for $\theta \in [0, \pi/2]$.
+
+The CDF for the polar angle is:
+$$
+P(\theta) = \int_{0}^{\theta} \sin s\,ds = \left[ -\cos s \right]_{0}^{\theta} = 1 - \cos\theta
+$$
+To invert the CDF, we set a uniform sample $u = P(\theta)$ and solve for $\theta$:
+$$
+u = 1 - \cos\theta \implies \cos\theta = 1 - u
+$$
+$$
+\theta = \arccos(1 - u)
+$$
+
+### Uniform Hemisphere visualize_warping_ui() Output
+![Uniform Hemisphere Distribution](images/uniform_hemisphere.png)
 
 # Point Light Integrator
 

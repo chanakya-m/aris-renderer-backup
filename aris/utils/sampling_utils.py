@@ -59,8 +59,11 @@ def pdf_uniform_sphere(p: Tensor) -> Tensor:
 
 
 def sample_uniform_hemisphere(uv: Tensor) -> Tensor:
-    theta = None
-    phi = None
+    u = uv[:, 0]
+    v = uv[:, 1]
+
+    phi = 2 * torch.pi * v
+    theta = torch.acos(1 - u)
 
     return torch.stack([
         torch.sin(theta) * torch.cos(phi),
@@ -68,9 +71,8 @@ def sample_uniform_hemisphere(uv: Tensor) -> Tensor:
         torch.cos(theta),
     ], dim=1)
 
-
 def pdf_uniform_hemisphere(p: Tensor) -> Tensor:
-    return None
+    return torch.ones_like(p[:, 0]) / (2 * torch.pi)
 
 
 def sample_cosine_hemisphere(uv: Tensor) -> Tensor:
