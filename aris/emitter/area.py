@@ -11,14 +11,25 @@ from aris.geometry import Geometry
 class AreaLight(Emitter):
     def __init__(self, radiance: list[int], geometry: Geometry, i_primitive: int, i_emitter: int) -> None:
         """Area light implementation
-        ...
+
+        radiance: energy of this light source
+        geometry: the scene geometry
+        i_primitive: the index of the geometry primitive (e.g. mesh) this emitter is attached to
+        i_emitter: the index of this emitter in all emitters
         """
+
         super().__init__(geometry, i_primitive, i_emitter)
+
         assert len(radiance) == 3, "radiance should be RGB values"
+
         self.radiance = torch.tensor(radiance, dtype=torch.float32).view(1, 3)
+
 
     def sample(self, n_samples: int, device: str) -> EmitterQuery:
         """Sample points from the area light"""
+        # YOUR TASK: sample a point from the mesh of this emitter
+        # return an EmitterQuery with points, normals, and pdf set correctly
+        # Hint: see Geometry.uniform_sample
         points, normals = self.geometry.uniform_sample(self.i_primitive, n_samples, device)
         query = EmitterQuery(points=points, normals=normals)
         self.pos_pdf(query)
@@ -26,21 +37,23 @@ class AreaLight(Emitter):
 
     def pos_pdf(self, query: EmitterQuery) -> EmitterQuery:
         """Position pdf of points from the area light"""
+        # YOUR TASK: given an EmitterQuery with points already set,
+        # compute the PDF of sampling these points, and set query.pdf
         pdf_value = self.geometry.uniform_sample_pos_pdf(self.i_primitive)
         n_points = query.points.shape[0]
-        device = query.points.device
-        query.pdf = torch.full((n_points,), pdf_value, device=device)
+        query.pdf = torch.full((n_points,), pdf_value)
         return query
 
     def le(self, query: EmitterQuery, geometry: Optional[Geometry]) -> EmitterQuery:
         """Compute the Le term
-        ...
+        If geometry is not None, check if the points and targets are mutually visible
         """
-        device = query.points.device
+        # YOUR TASK: given an EmitterQuery with points, normals, targets, and d_target_point set,
+        # compute the Le term from points to targets, and set query.le
+        # also, set query.mask to indicate which targets are lid
         query.le = torch.zeros_like(query.points)
-        query.mask = torch.zeros(len(query.points), dtype=torch.bool, device=device)
+        query.mask = torch.zeros(len(query.points), dtype=torch.bool)
 
-        # 1. Check if the emitter surface is facing the target point.
         cos_theta = dot(query.normals, -query.d_target_point)
         front_face_mask = (cos_theta > 0).squeeze()
 
@@ -50,15 +63,12 @@ class AreaLight(Emitter):
         final_mask = front_face_mask
 
         if geometry is not None:
-            # --- THE FIX IS HERE: Use parametric distance 't' for robust occlusion checks ---
-
-            # Filter to only trace rays for front-facing points
+            # only tracing rays for front-facing points
             points_ff = query.points[front_face_mask]
             normals_ff = query.normals[front_face_mask]
             targets_ff = query.targets[front_face_mask]
 
-            # Use an offset for the ray origin to avoid self-intersection at the light source
-            offset = 1e-3
+            offset = 1e-4
             shadow_ray_o = points_ff + normals_ff * offset
 
             # The direction vector is the UNNORMALIZED vector to the target.
@@ -68,7 +78,7 @@ class AreaLight(Emitter):
             shadow_geom = geometry.ray_intersect(shadow_ray_o, shadow_ray_d)
 
             # Assume all front-facing points are visible unless we find a valid occluder
-            is_occluded = torch.zeros(len(points_ff), dtype=torch.bool, device=device)
+            is_occluded = torch.zeros(len(points_ff), dtype=torch.bool)
 
             shadow_hit_mask = shadow_geom.mask
             if shadow_hit_mask.any():
@@ -102,7 +112,7 @@ class AreaLight(Emitter):
         query.mask = final_mask
 
         if query.mask.any():
-            query.le[query.mask] = self.radiance.to(device)
+            query.le[query.mask] = self.radiance
 
         return query
 

@@ -288,7 +288,7 @@ The value for $\sin\theta$ is then found using the identity $\sin\theta = \sqrt{
 
 My implementation first casts camera rays into the scene using `ray_intersect()` to find the initial intersection points and their corresponding surface normals. This returns a `hit_mask` that identifies which camera rays hit an object.
 
-For every point that was hit, I then construct a shadow ray originating from the intersection point and pointing towards the light source. An offset of magnitude 1e-4 (about a thousandth of the scene dimensions) is added along the surface normal to the shadow ray's origin to prevent self-intersection.
+For every point that was hit, I then construct a shadow ray originating from the intersection point and pointing towards the light source. An offset of magnitude 1e-4 is added along the surface normal to the shadow ray's origin to prevent self-intersection.
 
 These shadow rays are then traced in the scene with `ray_intersect()`. If a shadow ray hits an object, the original point is not visible to the light source. I then invert this result to create a `lit_mask` that marks only the points that are both visible to the camera and have a clear line of sight to the light.
 
@@ -300,6 +300,8 @@ The lighting formula is applied only to the points selected by the `lit_mask`. T
 
 
 # Ambient Occlusion Integrator
+
+(about a thousandth of the scene dimensions)
 
 
 ## Rendered Image:
