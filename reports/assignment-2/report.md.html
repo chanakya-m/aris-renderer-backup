@@ -301,8 +301,11 @@ The lighting formula is applied only to the points selected by the `lit_mask`. T
 
 # Ambient Occlusion Integrator
 
-(about a thousandth of the scene dimensions)
+The `sample` implementation first calls the `geometry.uniform_sample` helper function to generate random points and normals on the emitter's mesh. These are then used to create an `EmitterQuery` object. Then, `pos_pdf()` is called on this query to compute and store the probability densities before the query is returned.
 
+The `pos_pdf` function retrieves a single, constant probability density value by calling `geometry.uniform_sample_pos_pdf()` (since it's uniform, we can use a constant value for the density). It then creates a new tensor with the same number of elements as there are points in the input query and fills it with this constant value. This tensor is then assigned to the `pdf` attribute of the query.
+
+In the `le` implementation, the code begins by checking which points on the light source are facing their targets. This is done by computing the dot product between the surface normals and the outgoing light direction to find the points for which $\cos \theta > 0$, where $\theta$ is the angle between the normals and the light direction. From the result of this, a `front_face_mask` is created. If a `geometry` object is provided for visibility checks, a shadow ray is constructed for each front-facing point. The ray's origin is offset from the surface along the normal, and its direction is the *unnormalized* vector pointing to the target. These shadow rays are then traced using `geometry.ray_intersect`. For any shadow ray that hits an object, the code calculates the parametric distance `t` of the intersection. An intersection is only considered a true occluder if its `t` value is between 0 and 1, padded with a small epsilon (e.g., `0.0001 < t < 0.9999`), to ignore self-intersections at the target. A final mask is then created, representing all points that are both front-facing and visible, and this mask is used to assign the light's `radiance` value to the appropriate elements of the `query.le` tensor.
 
 ## Rendered Image:
 ![Ambient Occlusion Rendering](images/area_light.png)

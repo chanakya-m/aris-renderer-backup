@@ -71,40 +71,31 @@ class AreaLight(Emitter):
             offset = 1e-4
             shadow_ray_o = points_ff + normals_ff * offset
 
-            # The direction vector is the UNNORMALIZED vector to the target.
-            # This makes the target lie at t=1 for the ray equation.
             shadow_ray_d = targets_ff - shadow_ray_o
 
-            shadow_geom = geometry.ray_intersect(shadow_ray_o, shadow_ray_d)
+            shadow_geo = geometry.ray_intersect(shadow_ray_o, shadow_ray_d)
 
-            # Assume all front-facing points are visible unless we find a valid occluder
             is_occluded = torch.zeros(len(points_ff), dtype=torch.bool)
 
-            shadow_hit_mask = shadow_geom.mask
+            shadow_hit_mask = shadow_geo.mask
             if shadow_hit_mask.any():
-                # For rays that hit something, we calculate their parametric distance 't'
-                hit_points = shadow_geom.points[shadow_hit_mask]
-                ray_origins = shadow_geom.rays_o[shadow_hit_mask]
-                ray_directions = shadow_geom.rays_d[shadow_hit_mask]
+                hit_points = shadow_geo.points[shadow_hit_mask]
+                ray_os = shadow_geo.rays_o[shadow_hit_mask]
+                ray_ds = shadow_geo.rays_d[shadow_hit_mask]
 
-                vec_to_hit = hit_points - ray_origins
+                vec_to_hit = hit_points - ray_os
 
-                # Calculate t = ((H - P_offset) • d) / (d • d)
-                numerator = dot(vec_to_hit, ray_directions).squeeze()
-                denominator = dot(ray_directions, ray_directions).squeeze()
+                # t = ((H - P) • d) / (d • d)
+                numerator = dot(vec_to_hit, ray_ds).squeeze()
+                denominator = dot(ray_ds, ray_ds).squeeze()
 
-                # Adding an epsilon to the denominator prevents division by zero
                 t = numerator / (denominator + 1e-8)
 
-                # A true occlusion is a hit between the origin and the target.
-                # The target is at t=1, so we check for hits with 0 < t < 1.
-                # We use a small epsilon on both ends for floating point safety.
-                true_occlusion = (t > 1e-4) & (t < 0.9999)
+                epsilon = 1e-4
+                true_occlusion = (t > (0.0 + epsilon)) & (t < (1.0 - epsilon))
 
-                # Update the occlusion status for the points that had a shadow ray hit
                 is_occluded[shadow_hit_mask] = true_occlusion
 
-            # The final visibility mask includes all front-facing points that were NOT occluded
             visibility_mask = torch.zeros_like(front_face_mask)
             visibility_mask[front_face_mask] = ~is_occluded
             final_mask = visibility_mask
