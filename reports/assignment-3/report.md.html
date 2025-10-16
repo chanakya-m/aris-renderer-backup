@@ -21,10 +21,24 @@ The visibility term and the emitted radiance are both resolved by calling `emitt
 
 The contribution of this single light sample is calculated by multiplying these terms together and then dividing by the probability of having enerated the specific sample `y`. This probability accounts for both the hance of selecting the emitter and the positional PDF of the sample on the emitter's surface. The process is repeated for every active ray and their contributions are summed into the final image.
 
+### Cornell Box Rendering
+![DRT C-Box Rendering](images/drt.png)
+
 # Dielectrics
 
 !!! NOTE
     When computing the Fresnel term, how do you handle total internal reflection?
+
+In my implementation of the Fresnel calculation, the code first determines whether a ray is entering or leaving the medium to set the correct incident (`eta_in`) and transmitted (`eta_out`) indices of refraction.
+
+It then checks for the possibility of TIR by computing the squared sine of the potential transmission angle from Snell's Law. If this value is greater than one, the ray is marked as undergoing TIR.
+
+To determine the reflection probability, my code uses the Fresnel equations provided in the PBRT book.
+
+For rays that do not undergo TIR, it calculates the reflectance for s-polarized and p-polarized light. The final reflection probability is the average of these two values.
+
+For rays that are undergoing TIR, the reflection probability is set to 1.0 for 100% reflection.
+
 
 # Whitted-Style Ray Tracing
 

@@ -79,44 +79,58 @@ class WhittedIntegrator(Integrator):
             #   First, choose an emitter for every hit point
             #   Then, query each emitter with the assigned points, and add their contribution
             #   (You can find an example in emitter_check.py)
-            n_hits = len(points)
-            n_emitters = len(scene.emitters)
-            emitter_choices = torch.randint(0, n_emitters, (n_hits, ))
 
-            for i_emitter in range(n_emitters):
-                emitter = scene.emitters[i_emitter]
-                em_mask = (emitter_choices == i_emitter)
-                if not em_mask.any():
-                    continue
+            brdf_query = scene.sample_brdf(wo, normals, brdf_indices)
+            specular_mask = brdf_query.is_specular
 
-                em_query = emitter.sample(em_mask.sum(), device)
-                y_points = em_query.points
-                y_normals = em_query.normals
-                y_pdf_pos = em_query.pdf
+            diffuse_mask = ~specular_mask
 
-                x_points_subset = points[em_mask]
-                wi = F.normalize(y_points - x_points_subset, p=2, dim=1)
+            if diffuse_mask.any():
+                diffuse_indices = active_indices[diffuse_mask]
+                points_diffuse = points[diffuse_mask]
+                normals_diffuse = normals[diffuse_mask]
+                brdf_indices_diffuse = brdf_indices[diffuse_mask]
+                wo_diffuse = wo[diffuse_mask]
 
-                em_query.targets = x_points_subset
-                em_query.d_target_point = wi
+                n_hits = len(points_diffuse)
+                n_emitters = len(scene.emitters)
+                emitter_choices = torch.randint(0, n_emitters, (n_hits,), device=device)
 
-                le_query = emitter.le(em_query, scene.geometry)
-                le = le_query.le
+                for i_emitter in range(n_emitters):
+                    emitter = scene.emitters[i_emitter]
+                    em_mask = (emitter_choices == i_emitter)
+                    if not em_mask.any():
+                        continue
 
-                dist_sq = dot(y_points - x_points_subset, y_points - x_points_subset)
-                cos_x = torch.clamp(dot(normals[em_mask], wi), min = 0.0)
-                cos_y = torch.clamp(dot(y_normals, -wi), min = 0.0)
-                geometry_term = cos_x * cos_y / (dist_sq + 1e-8)
+                    em_query = emitter.sample(em_mask.sum(), device)
+                    y_points = em_query.points
+                    y_normals = em_query.normals
+                    y_pdf_pos = em_query.pdf
 
-                brdf_query = scene.eval_brdf(wo[em_mask], normals[em_mask], wi, brdf_indices[em_mask])
-                f_r = brdf_query.values
+                    x_points_subset = points_diffuse[em_mask]
 
-                p_choose_emitter = 1/n_emitters
-                p_y = p_choose_emitter * y_pdf_pos.view(-1,1)
+                    wi = F.normalize(y_points - x_points_subset, p=2, dim=1)
 
-                radiance = f_r * le * geometry_term / (p_y + 1e-8)
+                    em_query.targets = x_points_subset
+                    em_query.d_target_point = F.normalize(y_points - x_points_subset, p=2, dim=1) # Direction is from target to source for `le`
 
-                result[active_indices[em_mask]] += radiance
+                    le_query = emitter.le(em_query, scene.geometry)
+                    le = le_query.le
+
+                    dist_sq = dot(y_points - x_points_subset, y_points - x_points_subset)
+                    cos_x = torch.clamp(dot(normals_diffuse[em_mask], wi), min=0.0)
+                    cos_y = torch.clamp(dot(y_normals, -wi), min=0.0)
+                    geometry_term = cos_x * cos_y / (dist_sq + 1e-8)
+
+                    brdf_eval_query = scene.eval_brdf(wo_diffuse[em_mask], normals_diffuse[em_mask], wi, brdf_indices_diffuse[em_mask])
+                    f_r = brdf_eval_query.values
+
+                    p_choose_emitter = 1 / n_emitters
+                    p_y = p_choose_emitter * y_pdf_pos.view(-1, 1)
+
+                    radiance = f_r * le * geometry_term / (p_y + 1e-8)
+
+                    result[diffuse_indices[em_mask]] += throughput[diffuse_indices[em_mask]] * radiance
 
             # END OF DRT
 
