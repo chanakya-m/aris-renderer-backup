@@ -63,7 +63,6 @@ class AreaLight(Emitter):
         final_mask = front_face_mask
 
         if geometry is not None:
-            # only tracing rays for front-facing points
             points_ff = query.points[front_face_mask]
             normals_ff = query.normals[front_face_mask]
             targets_ff = query.targets[front_face_mask]
