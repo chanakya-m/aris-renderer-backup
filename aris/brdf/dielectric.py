@@ -1,5 +1,3 @@
-# brdf/dielectric.py (Corrected using standard vector math)
-
 import torch
 from torch import Tensor
 import torch.nn.functional as F
@@ -38,20 +36,13 @@ class DielectricBrdf(Brdf):
         sin_theta_t_sq = eta * eta * (1 - cos_theta_i * cos_theta_i)
         is_tir = (sin_theta_t_sq > 1.0).squeeze(-1)
 
-        # --- REFINED REFRACTION CALCULATION ---
-        # This part is now more explicit and clearer, but achieves the same result.
         cos_theta_t = torch.sqrt(torch.clamp(1.0 - sin_theta_t_sq, min=0.0))
 
-        # The refracted ray's component perpendicular to the normal is the
-        # same as wo's perpendicular component, but scaled by eta and flipped.
         wi_refract_perp = -wo * eta.view(-1, 1) * torch.tensor([1., 1., 0.], device=device)
 
-        # The component parallel to the normal points away from the surface.
-        # The sign of wo.z tells us which direction is "away".
         wi_refract_para = -torch.sign(wo[:, 2:3]) * cos_theta_t * torch.tensor([0., 0., 1.], device=device)
 
         wi_refract = wi_refract_perp + wi_refract_para
-        # --- END OF REFINEMENT ---
 
         reflect_prob = fresnel(cos_theta_i, cos_theta_t, eta_in, eta_out)
         reflect_prob = torch.where(is_tir.unsqueeze(-1), torch.tensor(1.0, device=device), reflect_prob)
@@ -69,7 +60,6 @@ class DielectricBrdf(Brdf):
         )
 
     def eval(self, query: BrdfQuery) -> BrdfQuery:
-        # Discrete BRDFs evaluate to zero
         wo = query.wo
         query.values = torch.zeros_like(wo)
         query.pdf = torch.zeros_like(wo[:, 0])
