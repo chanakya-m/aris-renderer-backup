@@ -48,6 +48,7 @@ For rays that are undergoing TIR, the reflection probability is set to 1.0 for 1
 At the beginning of each loop iteration, rays are traced and any that miss the scene are terminated. For the rays that hit, the logic is split. If a ray hits an emitter, its contribution is multiplied by the ray's current `throughput` and added to the final result, and the ray is then terminated.
 
 For non-emitter hits, the code determines the surface type by calling `scene.sample_brdf` and checking the returned `is_specular` flag.
+
 - If the surface is diffuse, the ray is terminated. Its final light contribution is calculated using the same single-sample DRT logic from Part 1. This reflected radiance is modulated by the ray's accumulated `throughput` before being added to the final image.
 - If the surface is specular, the ray continues. The `throughput` is updated by multiplying it with the `brdf_sample.values`.
 
@@ -65,5 +66,19 @@ To prevent self-intersection artifacts, especially after refraction, the origin 
 !!! NOTE
     For this and the following sections, briefly describe which parts in your code have been updated to add the features, discuss the design choices you have made (if any), and include relevant technical information about your implementation (if applicable). Include two rendered images for each section.
 
+I mainly adapted the logic from my completed Whitted-style integrator.
+
+Two sections of the Whitted integrator were removed:
+- Emitter Sampling: The entire block of code responsible for explicit emitter sampling on diffuse surfaces (the DRT term) was deleted. This integrator relies purely on random bounces to find light sources.
+- Diffuse/Specular Split: The logic that separated surfaces into diffuse and specular paths was removed.
+
+At each bounce, the code first checks if a ray has hit an emitter. If so, its contribution is multiplied by the path's `throughput` and gets added to the final image, and the ray path is terminated. This is the only mechanism by which the integrator accumulates light.
+
+For all other rays that hit a non-emitting surface the code calls `scene.sample_brdf` regardless of the material type. This function returns a new random direction for diffuse surfaces and a deterministic reflection/refraction direction for specular surfaces. The path's `throughput` is then multiplied by the `brdf_sample.values`, and the ray continues to the next bounce. The integrator relies on the BRDF to guide the path at each step.
+
+The same Russian-roulette scheme and ray-offsetting logic from the Whitted integrator is used for path termination and to prevent self-intersection artifacts.
+
+### Cornell Box Rendering
+![Whitted C-Box Rendering](images/brute_force.png)
 
 <!-- Markdeep: --><style class="fallback">body{visibility:hidden;white-space:pre;font-family:monospace}</style><script src="markdeep.min.js" charset="utf-8"></script><script src="https://morgan3d.github.io/markdeep/latest/markdeep.min.js?" charset="utf-8"></script><script>window.alreadyProcessedMarkdeep||(document.body.style.visibility="visible")</script>
