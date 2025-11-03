@@ -16,7 +16,7 @@ class RenderConfig:
     gui: bool
     device: str
     save_exr: bool
-    ckpt: str = "outputs/2025-11-02/23-40-59/checkpoints/step_4000.ckpt"
+    checkpoint: Optional[str] = "outputs/2025-11-02/23-40-59/checkpoints/step_4000.ckpt"
 
 cs = ConfigStore.instance()
 cs.store(name="render_schema", node=RenderConfig)

@@ -10,3 +10,5 @@ block_size: 128
 gui: false
 device: cpu
 save_exr: false
+
+checkpoint:

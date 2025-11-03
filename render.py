@@ -47,28 +47,6 @@ def main(cfg: RenderConfig = None):
     scene = build_scene(cfg.scene)
     logger.info("Built scene")
 
-    if cfg.ckpt != "":
-        logger.info(f"Loading checkpoint from {cfg.ckpt}")
-
-        ckpt_path = Path(cfg.ckpt)
-        if not ckpt_path.is_file():
-            logger.error(f"Checkpoint file not found at {ckpt_path}")
-            return
-
-        ckpt = torch.load(ckpt_path, map_location='cpu')
-
-        trained_brdf = [o for o in scene.brdf if isinstance(o, torch.nn.Module)]
-
-        for i, brdf in enumerate(trained_brdf):
-            model_key = f"brdf_{i}"
-            if model_key in ckpt["model"]:
-                brdf.load_state_dict(ckpt["model"][model_key])
-                logger.info(f"Loaded weights for {model_key}")
-            else:
-                logger.warning(f"Could not find weights for {model_key} in checkpoint")
-
-        logger.info("Successfully loaded model parameters.")
-
     # generate all pixel coordinates to render
     H, W = cfg.scene.height, cfg.scene.width
     coords = torch.stack(
