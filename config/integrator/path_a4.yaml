@@ -1,0 +1,7 @@
+name: path_a4
+
+config:
+  max_path_length: 5
+  cont_prob: 0.9
+  enable_emitter_sample: true
+  mis: true

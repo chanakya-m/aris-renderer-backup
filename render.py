@@ -47,6 +47,23 @@ def main(cfg: RenderConfig = None):
     scene = build_scene(cfg.scene)
     logger.info("Built scene")
 
+    trained_brdf = [o for o in scene.brdf if isinstance(o, torch.nn.Module)]
+    trained_models: dict[str, torch.nn.Module] = {} # other trained things
+    for i, brdf in enumerate(trained_brdf):
+        trained_models[f"brdf_{i}"] = brdf
+        brdf.train(False)
+
+    if cfg.checkpoint is not None:
+        logger.info(f"Loading checkpoint from {cfg.checkpoint}")
+        ckpt = torch.load(cfg.checkpoint, map_location=cfg.device)
+        
+        for key, model in trained_models.items():
+            if key in ckpt["model"]:
+                model.load_state_dict(ckpt["model"][key])
+                logger.info(f"  - Loaded weights for '{key}'")
+            else:
+                logger.warning(f"  - Could not find weights for '{key}' in checkpoint")
+
     # generate all pixel coordinates to render
     H, W = cfg.scene.height, cfg.scene.width
     coords = torch.stack(
@@ -102,7 +119,7 @@ def main(cfg: RenderConfig = None):
             pass
         cv2.destroyAllWindows()
 
-
+@torch.no_grad()
 def render_block(cfg: RenderConfig, coords: Tensor, scene: Scene, integrator: Integrator) -> Tensor:
     device = cfg.device
     spp = cfg.spp

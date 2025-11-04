@@ -12,14 +12,37 @@ Chanakya, Maddineni
 !!! NOTE
     Include the visualizations at 1000, 2000, 3000, and 4000 steps.
 
-Replace this line with your responses.
+## 1000 steps:
+![1000 Step Visualization](images/1000_vis.png)
+
+## 2000 steps:
+![2000 Step Visualization](images/2000_vis.png)
+
+## 3000 steps:
+![3000 Step Visualization](images/3000_vis.png)
+
+## 4000 steps:
+![4000 Step Visualization](images/4000_vis.png)
 
 # Loading the Trained Models and Rendering Them
 
 !!! NOTE
     Include the spp=128 rendering of your trained model. Then, include the albedo renderings at 1000, 2000, 3000, and 4000 steps.
 
-Replace this line with your responses.
+## Trained spp=128 rendering:
+![Trained spp=128](images/trained-128spp.png)
+
+## Albedo 1000 steps: 
+![1000 Step Albedo](images/albedo1000.png)
+
+## Albedo 2000 steps:
+![2000 Step Albedo](images/albedo2000.png)
+
+## Albedo 3000 steps:
+![3000 Step Albedo](images/albedo3000.png)
+
+## Albedo 4000 steps:
+![4000 Step Albedo](images/albedo4000.png)
 
 # Limiting Path Length
 
@@ -28,7 +51,24 @@ Replace this line with your responses.
 
     How do they look compared to ground truth and previous results, and why?
 
-Replace this line with your responses.
+## Albedo Clipped 1000 steps: 
+![Clipped 1000 Step Albedo](images/albedo_clip1000.png)
+
+## Albedo Clipped 2000 steps:
+![Clipped 2000 Step Albedo](images/albedo_clip2000.png)
+
+## Albedo Clipped 3000 steps:
+![Clipped 3000 Step Albedo](images/albedo_clip3000.png)
+
+## Albedo Clipped 4000 steps:
+![Clipped 4000 Step Albedo](images/albedo_clip4000.png)
+
+## Comparison of Rendered Albedos
+
+After training, the wall colors learned with the limited path length are noticeably brighter than both the ground truth and the colors learned in Part 1 with a longer path length.
+
+This happens because the optimizer is forced to compensate for the missing global illumination. The ground truth image is physically accurate and includes the brightness added by multiple bounces of light, such as the light reflecting from the ceiling and floor onto the walls. The limited-path renderer cannot simulate this extra light. To minimize the loss and match the brightness of the ground truth image, the optimizer's has to increase the intrinsic color value of the walls themselves. Therefore, it learns a physically inaccurate, brighter albedo to make up for the missing light transport in the rendering model.
+
 
 # Training Neural Radiosity
 

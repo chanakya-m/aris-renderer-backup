@@ -1,6 +1,6 @@
 defaults:
   - scene: cbox_train_diffuse
-  - integrator: path_mis
+  - integrator: path_a4
   - train_schema
   - _self_
 
