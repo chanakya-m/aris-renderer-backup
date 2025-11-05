@@ -2,9 +2,6 @@
 
 **CMSC740 Assignment 4**
 
-!!! WARNING
-    Remember to write your name below and remove this warning!
-
 Chanakya, Maddineni
 
 # Reconstruct the Diffuse BRDFs of the Walls
@@ -86,25 +83,24 @@ The final Monte Carlo estimate for the one-bounce reflected light is the product
 !!! NOTE
     Include the three rendered images as described in the assignment description.
 
-Replace this line with your responses.
+## Trained NeRad Scene Rendering
+![Final NeRad Rendering](images/nerad_final.png)
+
+## Trained NeRad Albedo Renderings
+![NeRad 2000 Step Albedo Rendering](images/nerad2000_albedo.png) ![NeRad 4000 Step Albedo Rendering](images/nerad4000_albedo.png)
+
+---
 
 !!! NOTE
     Compare the speed of training and rendering between neural radiosity and path tracing (Part 1).
     **Depending on your code and environment, either can be faster, or they can have roughly the same speed.**
     Analyze, in your case, what may be contributing to the difference or similarity.
 
-    
-In my experiments, training with Neural Radiosity was significantly faster than training with the standard path tracer from Part 1. 
+After some tests, I found that for both training and final rendering, the Neural Radiosity approach was slightly slower in this specific implementation. I am using a Silicon Mac. All computation is happening on the CPU.
 
-This is because the standard path tracer, when calling the `render()` function, must perform a full Monte Carlo integration for every diffuse surface, which involves:
-1.  Randomly choosing an emitter.
-2.  Sampling a random point on that emitter's surface.
-3.  Casting a shadow ray back to the surface point, which involves a full scene intersection test.
-4.  Evaluating the BRDF and the complex geometry term.
+On average, training for 4000 steps with the standard path tracer took approximately 5 minutes, while training with NeRad took about 5 minutes and 10 seconds. This is because a single training step for NeuRad is computationally heavier. It must execute the `render_nerad()` function, which computes both the `LHS` (a ray trace plus a network query) and the `RHS` (a two-bounce path trace). The standard path tracer, on the other hand, only needs to perform its single forward pass for the loss calculation.
 
-The speedup during training is because the standard path tracer must perform a full Monte Carlo integration for every diffuse surface, which involves choosing an emitter, sampling a point on it, casting a shadow ray for a scene intersection test, and evaluating the BRDF and geometry term. In contrast, the Neural Radiosity implementation replaces this expensive process with a single forward pass through a small neural network. Querying an MLP is an optimized, parallel operation, and an MLP of this size requires fewer computations than casting and intersecting a new batch of shadow rays, leading to faster training steps.
+For the final, high-quality rendering, the standard path tracer took on average about 1 minute and 45 seconds, whereas the NeRad render (using the `RHS`) took approximately 2 minutes. This result is less intuitive but can be explained by the specific computations involved. The `RHS` computation is a two-path trace that finishes with a query to the neural network. The standard `render()` function, when limited to a similar path length, performs a two-path trace that includes next-event estimation (shadow rays) at each bounce. In this case, the overhead of gathering all the inputs for the neural network (positions, normals, albedos) and the cost of the network's forward pass appears to be slightly greater than the cost of the additional shadow ray calculations performed by the standard path tracer, leading to a performance difference in favor of the path tracer for final rendering.
 
-Rendering a final image with the standard path tracer was faster than rendering the `LHS` image with the trained NeRad model.
-  
 
 <!-- Markdeep: --><style class="fallback">body{visibility:hidden;white-space:pre;font-family:monospace}</style><script src="markdeep.min.js" charset="utf-8"></script><script src="https://morgan3d.github.io/markdeep/latest/markdeep.min.js?" charset="utf-8"></script><script>window.alreadyProcessedMarkdeep||(document.body.style.visibility="visible")</script>

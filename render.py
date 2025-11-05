@@ -49,7 +49,7 @@ def main(cfg: RenderConfig = None):
 
     trained_models: dict[str, torch.nn.Module] = {}
     
-    trained_brdf = [o for o in scene.brdf if isinstance(o, nn.Module)]
+    trained_brdf = [o for o in scene.brdf if isinstance(o, torch.nn.Module)]
     for i, brdf in enumerate(trained_brdf):
         trained_models[f"brdf_{i}"] = brdf
         brdf.train(False)
@@ -153,9 +153,13 @@ def render_block(cfg: RenderConfig, coords: Tensor, scene: Scene, integrator: In
 
     # transform pixel coordinates to world coordinates
     rays_o, rays_d = scene.camera.image_to_rays(coords)
-
-    # integrate
-    colors = integrator.render(scene, rays_o.to(device), rays_d.to(device))
+    
+    if cfg.mode == "render":
+        # standard rendering path
+        colors = integrator.render(scene, rays_o.to(device), rays_d.to(device))
+    elif cfg.mode == "nerad":
+        _, rhs = integrator.render_nerad(scene, rays_o.to(device), rays_d.to(device))
+        colors = rhs
 
     # sanity check: colors shall be non-negative
     n_infinite = int(torch.sum(~torch.isfinite(colors)))
