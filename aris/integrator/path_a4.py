@@ -139,10 +139,43 @@ class PathIntegrator(Integrator, nn.Module):
                          active_indices, throughput, None, E, hit_emitter)
 
         # YOUR TASK: implement correct RHS
-        RHS = self.render(scene, rays_o, rays_d)  # remove this placeholder!
+        continue_mask = ~hit_emitter
+        if continue_mask.any():
+            points_x1 = points[continue_mask]
+            normals_x1 = normals[continue_mask]
+            brdf_i_x1 = brdf_i[continue_mask]
+            wo_x1 = wo[continue_mask]
+            active_indices_x1 = active_indices[continue_mask]
+
+            brdf_sample = scene.sample_brdf(wo_x1, normals_x1, brdf_i_x1)
+            wi = brdf_sample.wi
+            brdf_val = brdf_sample.values # (f_r * cos) / pdf
+
+            offset_normals = normals_x1
+            flip_mask = dot(wi, offset_normals).squeeze(-1) < 0
+            offset_normals[flip_mask] *= -1
+            rays_o_x2 = points_x1 + offset_normals * 1e-3
+            rays_d_x2 = wi
+            
+            geo_out_x2 = scene.geometry.ray_intersect(rays_o_x2, rays_d_x2)
+            hit_mask_x2 = geo_out_x2.mask
+            
+            if hit_mask_x2.any():
+                points_x2 = geo_out_x2.points[hit_mask_x2]
+                normals_x2 = geo_out_x2.sh_normals[hit_mask_x2]
+                brdf_i_x2 = geo_out_x2.brdf_i[hit_mask_x2]
+                wo_x2 = -rays_d_x2[hit_mask_x2]
+                
+                network_output_x2 = self.network(points_x2, wo_x2, normals_x2, scene.get_albedo_brdf(brdf_i_x2).detach())
+                
+                brdf_val_hit = brdf_val[hit_mask_x2]
+                reflected_light = brdf_val_hit * network_output_x2
+                
+                final_indices = active_indices_x1[hit_mask_x2]
+                RHS[final_indices] = reflected_light
 
         # YOUR TASK: replace second return value by E+RHS when RHS is done
-        return E + LHS, RHS
+        return E + LHS, E + RHS
 
     def emitter_hit(
         self,

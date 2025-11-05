@@ -64,7 +64,10 @@ def main(cfg: TrainConfig = None):
         # initialize nerad for the integrator,
         # setup its optimizer,
         # put it in the trained_models dict for saving checkpoints
-        pass
+        if isinstance(integrator, nn.Module):
+            integrator.init_nerad()
+            nerad_optim = Adam(integrator.parameters(), lr=cfg.learning_rate)
+            trained_models["nerad_integrator"] = [integrator, nerad_optim]
 
     if len(trained_models) == 0:
         logger.error("No model to train!")
@@ -105,14 +108,15 @@ def main(cfg: TrainConfig = None):
             loss = F.mse_loss(colors, gt[b_indices])
         elif mode == "nerad":
             # YOUR TASK (2/3): fill in the blanks indicated by comments
-            lhs, rhs = None, None  # <- fill this
+            lhs, rhs = integrator.render_nerad(scene, rays_o.to(device), rays_d.to(device))
 
             # residual loss
             residual = F.mse_loss(lhs, rhs.detach())
 
             # reconstruction loss using rhs,
             # remember to take care of spp
-            recons = None  # <- fill this
+            rhs_averaged = rhs.view(batch_size, spp, 3).sum(dim=1) / spp
+            recons = F.mse_loss(rhs_averaged, gt[b_indices])
 
             loss = residual + recons
 
@@ -197,7 +201,7 @@ def render_full_image(cfg: TrainConfig, coords: Tensor, scene: Scene, integrator
             colors = integrator.render(scene, rays_o.to(device), rays_d.to(device))
         elif mode == "nerad":
             # YOUR TASK (3/3): complete the line (hint: same as task 2)
-            lhs, rhs = None, None
+            lhs, rhs = integrator.render_nerad(scene, rays_o.to(device), rays_d.to(device))
             colors = torch.cat([lhs, rhs], dim=-1)
 
         colors = colors.view(b_H * b_W, spp, -1).sum(dim=1) / spp

@@ -19,6 +19,7 @@ class RenderConfig:
     device: str
     save_exr: bool
     checkpoint: Optional[str] = None
+    mode: str = "render"
 
 cs = ConfigStore.instance()
 cs.store(name="render_schema", node=RenderConfig)
