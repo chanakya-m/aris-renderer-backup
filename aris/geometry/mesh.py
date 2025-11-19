@@ -115,30 +115,56 @@ class MeshGeometry(Geometry):
         # Compute shading (interpolated) normals
         sh_normals = torch.zeros_like(rays_o)
         sh_mask = torch.zeros(len(sh_normals), dtype=torch.bool)
-        sh_indices = get_rt_indices("primitive_ids")
+        # sh_indices = get_rt_indices("primitive_ids")
         sh_uvs = get_rt_result("primitive_uvs")
         u = sh_uvs[:, 0]
         v = sh_uvs[:, 1]
         w = 1 - u - v
         sh_weights = torch.stack([w, u, v], dim=1).view(-1, 3, 1)
 
-        for i in range(len(self.obj_normals)):
-            obj_normals = self.obj_normals[i]
+        obj_normals_gpu = [n.to(device) for n in self.obj_normals]
+        obj_normal_indices_gpu = [ni.to(device) for ni in self.obj_normal_indices]
+        sh_indices_gpu = get_rt_indices("primitive_ids").to(device)
+        sh_uvs_gpu = get_rt_result("primitive_uvs")
+
+        # --- Compute shading (interpolated) normals, now entirely on the GPU ---
+        sh_normals = torch.zeros_like(rays_o)
+        # Ensure sh_mask is also on the correct device from the start
+        sh_mask = torch.zeros(len(sh_normals), dtype=torch.bool, device=device)
+
+        u = sh_uvs_gpu[:, 0]
+        v = sh_uvs_gpu[:, 1]
+        w = 1 - u - v
+        sh_weights = torch.stack([w, u, v], dim=1).view(-1, 3, 1)
+
+        # --- THE CORRECTED LOOP ---
+        # Iterate over the GPU-based lists
+        for i in range(len(obj_normals_gpu)):
+            # Use the GPU tensors we prepared
+            obj_normals = obj_normals_gpu[i]
             if len(obj_normals) == 0:
                 continue
 
-            obj_normal_indices = self.obj_normal_indices[i]
+            obj_normal_indices = obj_normal_indices_gpu[i]
             if len(obj_normal_indices) == 0:
                 continue
 
+            # This comparison is GPU vs GPU
             i_mask = (geo_ids == i) & mask
             if int(i_mask.sum()) == 0:
                 continue
 
             sh_mask[i_mask] = True
-            i_tri_indices = sh_indices[i_mask]
+
+            # Indexing is GPU vs GPU
+            i_tri_indices = sh_indices_gpu[i_mask]
+
+            # Indexing is GPU vs GPU
             i_normal_indices = obj_normal_indices[i_tri_indices].view(-1)
-            i_normals = obj_normals[i_normal_indices].view(-1, 3, 3).to(device)
+
+            # Indexing is GPU vs GPU
+            i_normals = obj_normals[i_normal_indices].view(-1, 3, 3)
+
             sh_normals[i_mask] = F.normalize(torch.sum(i_normals * sh_weights[i_mask], dim=1))
 
         # For meshes without shading normals, just use geometry normals

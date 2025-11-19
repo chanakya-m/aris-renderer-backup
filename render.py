@@ -48,21 +48,21 @@ def main(cfg: RenderConfig = None):
     logger.info("Built scene")
 
     trained_models: dict[str, torch.nn.Module] = {}
-    
+
     trained_brdf = [o for o in scene.brdf if isinstance(o, torch.nn.Module)]
     for i, brdf in enumerate(trained_brdf):
         trained_models[f"brdf_{i}"] = brdf
         brdf.train(False)
 
     if cfg.mode == "nerad" and isinstance(integrator, torch.nn.Module):
-        integrator.init_nerad() 
+        integrator.init_nerad()
         trained_models["nerad_integrator"] = integrator
         integrator.train(False)
 
     if cfg.checkpoint is not None:
         logger.info(f"loading checkpoint from {cfg.checkpoint}")
         ckpt = torch.load(cfg.checkpoint, map_location=cfg.device)
-        
+
         for key, model in trained_models.items():
             if key in ckpt["model"]:
                 model.load_state_dict(ckpt["model"][key])
@@ -79,7 +79,7 @@ def main(cfg: RenderConfig = None):
     if cfg.checkpoint is not None:
         logger.info(f"Loading checkpoint from {cfg.checkpoint}")
         ckpt = torch.load(cfg.checkpoint, map_location=cfg.device)
-        
+
         for key, model in trained_models.items():
             if key in ckpt["model"]:
                 model.load_state_dict(ckpt["model"][key])
@@ -153,7 +153,7 @@ def render_block(cfg: RenderConfig, coords: Tensor, scene: Scene, integrator: In
 
     # transform pixel coordinates to world coordinates
     rays_o, rays_d = scene.camera.image_to_rays(coords)
-    
+
     if cfg.mode == "render":
         # standard rendering path
         colors = integrator.render(scene, rays_o.to(device), rays_d.to(device))
