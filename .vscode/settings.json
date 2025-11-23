@@ -29,4 +29,7 @@
         "--generated-members=numpy.*,torch.*,cv2.*",
         "--disable=import-error,missing-module-docstring,missing-function-docstring,missing-class-docstring,logging-fstring-interpolation,line-too-long,invalid-name,consider-using-from-import,too-many-locals,relative-beyond-top-level,global-statement,unspecified-encoding,consider-using-enumerate,abstract-method,arguments-differ,disallowed-name,too-many-arguments,too-many-instance-attributes,too-many-ancestors,redefined-outer-name,broad-except,unused-argument,too-few-public-methods",
     ],
+    "python-envs.defaultEnvManager": "ms-python.python:conda",
+    "python-envs.defaultPackageManager": "ms-python.python:conda",
+    "python-envs.pythonProjects": [],
 }
