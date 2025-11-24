@@ -3,6 +3,10 @@ import numpy as np
 import argparse
 import os
 
+import faulthandler
+faulthandler.enable()
+
+
 
 def create_pointcloud(mesh_path: str, num_points: int, noise_std_dev: float, output_path: str):
     """
@@ -10,13 +14,16 @@ def create_pointcloud(mesh_path: str, num_points: int, noise_std_dev: float, out
     point cloud, adds noise, saves the result.
     """
     print(f"Loading mesh from {mesh_path}")
+    if not os.path.exists(mesh_path):
+        print("No file at mesh path")
+        return
     mesh = o3d.io.read_triangle_mesh(mesh_path)
 
     if not mesh.has_vertices():
         print(f"Mesh at {mesh_path} has no vertices.")
         return
 
-    mesh.center_vertices()
+    mesh.translate((0,0,0), relative=False)
 
     bbox = mesh.get_axis_aligned_bounding_box()
     max_extent = bbox.get_max_extent()
