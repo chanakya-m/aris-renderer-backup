@@ -23,7 +23,9 @@ def create_pointcloud(mesh_path: str, num_points: int, noise_std_dev: float, out
         print(f"Mesh at {mesh_path} has no vertices.")
         return
 
-    mesh.translate((0,0,0), relative=False)
+    center = mesh.get_center()
+    print(f"Centering mesh. Original center: {center}")
+    mesh.translate(-center, relative=False)
 
     bbox = mesh.get_axis_aligned_bounding_box()
     max_extent = bbox.get_max_extent()
@@ -41,10 +43,14 @@ def create_pointcloud(mesh_path: str, num_points: int, noise_std_dev: float, out
         points = points + noise
         pcd.points = o3d.utility.Vector3dVector(points)
 
-    os.makedirs(os.path.dirname(output_path), exist_ok=True)
+    directory = os.path.dirname(output_path)
+    if directory:
+        os.makedirs(directory, exist_ok=True)
+
     o3d.io.write_point_cloud(output_path, pcd)
 
-    np_output_path = output_path.replace(".ply", ".npz").replace(".xyz", ".npz")
+    base_name, _ = os.path.splitext(output_path)
+    np_output_path = f"{base_name}.npz"
 
     data_dict = {"points": points.astype(np.float32)}
     if pcd.has_normals():
@@ -52,15 +58,21 @@ def create_pointcloud(mesh_path: str, num_points: int, noise_std_dev: float, out
 
     np.savez(np_output_path, **data_dict)
 
-    print(f"Saved point cloud to {output_path} and {np_output_path}")
+    print(f"Saved point cloud to {output_path}")
+    print(f"Saved numpy data to  {np_output_path}")
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("--mesh", type=str, required=True, help="Path to mesh")
     parser.add_argument("--num_points", type=int, default=100000, help="Number of points to sample")
     parser.add_argument("--noise", type=float, default=0.0, help="Standard deviation of noise")
-    parser.add_argument("--output", type=str, required=True, help="Path to output of .ply file")
+    parser.add_argument("--output", type=str, required=False, help="Path to output of .ply file")
 
     args = parser.parse_args()
 
-    create_pointcloud(args.mesh, args.num_points, args.noise, args.output)
+    output_path = args.output
+    if output_path is None:
+        base, _ = os.path.splitext(args.mesh)
+        output_path = f"{base}_{args.num_points}.ply"
+
+    create_pointcloud(args.mesh, args.num_points, args.noise, output_path)
