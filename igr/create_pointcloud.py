@@ -23,29 +23,48 @@ def create_pointcloud(mesh_path: str, num_points: int, noise_std_dev: float, out
         print(f"Mesh at {mesh_path} has no vertices.")
         return
 
-    bbox = mesh.get_axis_aligned_bounding_box()
-    max_extent = bbox.get_max_extent()
-    center = bbox.get_center()
-    print(f"Original Center: {center}")
-    mesh.translate(-center)
-    new_bbox = mesh.get_axis_aligned_bounding_box()
-    print(f"New center: {new_bbox.get_center()}")
-    print(f"New Min Bounds: {new_bbox.get_min_bound()}")
-    print(f"New Max Bounds: {new_bbox.get_max_bound()}")
-
-    scale_factor = 1.8 / max_extent  # 1.8 so it fits within [-0.9, 0.9]
-    mesh.scale(scale_factor, center=(0, 0, 0))
-    print("Normalized mesh to unit sphere.")
-
     print(f"Sampling {num_points}")
     pcd = mesh.sample_points_poisson_disk(number_of_points = num_points)
     points = np.asarray(pcd.points)
+    center = points.mean(axis=0)
+    points = points - center
+    max_bound = points.max(axis=0)
+    min_bound = points.min(axis=0)
+    max_extent = (max_bound - min_bound).max()
+
+    scale_factor = 1.8 / max_extent
+    points = points * scale_factor
+
+    print(f"--- Normalization Stats ---")
+    print(f"Original Center Removed: {center}")
+    print(f"Scale Factor Applied: {scale_factor:.4f}")
+    print(f"New center: {points.mean(axis=0)}")
+    print(f"New Max Extent: {(points.max(axis=0) - points.min(axis=0)).max():.4f}")
+    print(f"New Min Bound: {points.min(axis=0)}")
+    print(f"New Max Bound: {points.max(axis=0)}")
+    print(f"---------------------------")
+
+    # bbox = mesh.get_axis_aligned_bounding_box()
+    # max_extent = bbox.get_max_extent()
+    # center = bbox.get_center()
+    # print(f"Original Center: {center}")
+    # mesh.translate(-center)
+    # new_bbox = mesh.get_axis_aligned_bounding_box()
+    # print(f"New center: {new_bbox.get_center()}")
+    # print(f"New Min Bounds: {new_bbox.get_min_bound()}")
+    # print(f"New Max Bounds: {new_bbox.get_max_bound()}")
+
+    # scale_factor = 1.8 / max_extent  # 1.8 so it fits within [-0.9, 0.9]
+    # mesh.scale(scale_factor, center=(0, 0, 0))
+    # print("Normalized mesh to unit sphere.")
+
 
     if noise_std_dev > 0:
         print(f"Adding Gaussian noise std={noise_std_dev}")
         noise = np.random.normal(0, noise_std_dev, points.shape)
         points = points + noise
-        pcd.points = o3d.utility.Vector3dVector(points)
+
+    pcd.points = o3d.utility.Vector3dVector(points)
 
     directory = os.path.dirname(output_path)
     if directory:
@@ -64,6 +83,7 @@ def create_pointcloud(mesh_path: str, num_points: int, noise_std_dev: float, out
 
     print(f"Saved point cloud to {output_path}")
     print(f"Saved numpy data to  {np_output_path}")
+
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
