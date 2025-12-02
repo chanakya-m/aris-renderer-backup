@@ -23,12 +23,16 @@ def create_pointcloud(mesh_path: str, num_points: int, noise_std_dev: float, out
         print(f"Mesh at {mesh_path} has no vertices.")
         return
 
-    center = mesh.get_center()
-    print(f"Centering mesh. Original center: {center}")
-    mesh.translate(-center, relative=False)
-
     bbox = mesh.get_axis_aligned_bounding_box()
     max_extent = bbox.get_max_extent()
+    center = bbox.get_center()
+    print(f"Original Center: {center}")
+    mesh.translate(-center)
+    new_bbox = mesh.get_axis_aligned_bounding_box()
+    print(f"New center: {new_bbox.get_center()}")
+    print(f"New Min Bounds: {new_bbox.get_min_bound()}")
+    print(f"New Max Bounds: {new_bbox.get_max_bound()}")
+
     scale_factor = 1.8 / max_extent  # 1.8 so it fits within [-0.9, 0.9]
     mesh.scale(scale_factor, center=(0, 0, 0))
     print("Normalized mesh to unit sphere.")

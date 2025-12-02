@@ -5,3 +5,4 @@ __pycache__/
 .DS_Store
 .vscode/launch.json
 /igr/data
+/igr/checkpoints

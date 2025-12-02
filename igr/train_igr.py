@@ -80,7 +80,7 @@ def train(args):
         # Manifold Loss: f(x) = 0
         loss_mnfld = mnfld_pred.abs().mean()
 
-        # Eikonal Loss: |grad(z)| = 1 (on off-surface points)
+        # Eikonal Loss: |grad(z)| = 1 on off-surface points
         loss_grad = ((nonmnfld_grad.norm(2, dim=-1) - 1) ** 2).mean()
 
         # Normals Loss: grad(x) = n (on on-surface points)

@@ -2,7 +2,7 @@ import torch
 import torch.nn as nn
 import numpy as np
 
-class ImplicitNet(nn.Module):
+class SDFNetwork(nn.Module):
     def __init__(self,
                  d_in=3,
                  d_out=1,
