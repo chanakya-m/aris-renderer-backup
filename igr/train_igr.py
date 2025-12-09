@@ -29,7 +29,7 @@ def train(args):
     print(f"Using device: {device}")
 
     print(f"Loading data from {args.input}...")
-    data = np.load(args.input)
+    data = np.load(args.input, allow_pickle=True)
 
     all_points = torch.from_numpy(data["points"]).to(device)
     all_normals = torch.from_numpy(data["normals"]).to(device)
@@ -109,7 +109,7 @@ def train(args):
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("--input", type=str, required=True, help="Path to .npz file")
-    parser.add_argument("--steps", type=int, default=5000, help="Total training steps")
+    parser.add_argument("--steps", type=int, default=10000, help="Total training steps")
     parser.add_argument("--batch_size", type=int, default=512, help="Points per batch")
     parser.add_argument("--lr", type=float, default=1e-4, help="Initial learning rate")
     parser.add_argument("--decay_steps", type=int, default=2000, help="Decay LR every N steps")

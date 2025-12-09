@@ -24,11 +24,10 @@ conda init
 # source $(conda info --base)/etc/profile.d/conda.sh
 conda activate aris-3
 
-python train.py \
-    --config-name train_render \
-    scene=cbox_train_diffuse \
-    gt=./scripts/cbox-diffuse.exr \
-    device=cuda
+cd /fs/classhomes/cmaddine/aris-renderer-backup/igr
+
+python train_igr.py \
+    --input data/bunny/bunny_watertight_100000.npz
 
 echo "======================================================"
 echo "Job finished"

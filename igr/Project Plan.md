@@ -42,3 +42,12 @@ Write a script to measure:
     Columns: Model Type (FP32 vs INT8), Model Size (MB), Inference Time (ms per batch), Chamfer Distance (Lower is better).
     - Hyperparameter Table:
     Listing learning rate, lambda weight for Eikonal loss, batch size, and sigma values used for sampling.
+
+
+
+## Also:
+- speed
+- use a newer ML technique, compare quantization with IGR
+- use different meshes than just the bunny
+- use even lower quantization
+- use a sparser pointcloud

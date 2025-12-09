@@ -7,10 +7,9 @@
 #SBATCH --error=slurm_logs/slurm-%j.err
 #SBATCH --nodes=1
 #SBATCH --ntasks-per-node=1
-#SBATCH --cpus-per-task=1
+#SBATCH --cpus-per-task=2
 #SBATCH --mem=16G
 #SBATCH --time=0-00:30:00
-#SBATCH --gres=gpu:1
 
 mkdir -p slurm_logs
 
@@ -24,7 +23,12 @@ conda init
 # source $(conda info --base)/etc/profile.d/conda.sh
 conda activate aris-3
 
-python render.py scene=cbox scene/brdf=cbox_diffuse spp=256 integrator=whitted
+cd /fs/classhomes/cmaddine/aris-renderer-backup/igr
+
+python reconstruct_igr.py \
+    --checkpoint checkpoints/igr_final.pth \
+    --output data/bunny/bunny_reconstructed.ply \
+    --resolution 256
 
 echo "======================================================"
 echo "Job finished"

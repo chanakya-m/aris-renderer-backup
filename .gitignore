@@ -6,3 +6,4 @@ __pycache__/
 .vscode/launch.json
 /igr/data
 /igr/checkpoints
+/slurm_logs
