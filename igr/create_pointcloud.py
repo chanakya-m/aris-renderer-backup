@@ -26,10 +26,10 @@ def create_pointcloud(mesh_path: str, num_points: int, noise_std_dev: float, out
     print(f"Sampling {num_points}")
     pcd = mesh.sample_points_poisson_disk(number_of_points = num_points)
     points = np.asarray(pcd.points)
-    center = points.mean(axis=0)
-    points = points - center
     max_bound = points.max(axis=0)
     min_bound = points.min(axis=0)
+    center = (max_bound + min_bound) / 2
+    points = points - center
     max_extent = (max_bound - min_bound).max()
 
     scale_factor = 1.8 / max_extent
