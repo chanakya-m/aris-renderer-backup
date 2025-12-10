@@ -50,7 +50,7 @@ class SDFNetwork(nn.Module):
 
             x = layer(x)
 
-            if i < self.num_layers - 1:
+            if i < len(self.layers) - 1:
                 x = self.activation(x)
 
         return x

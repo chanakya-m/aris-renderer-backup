@@ -10,6 +10,7 @@
 #SBATCH --cpus-per-task=2
 #SBATCH --mem=16G
 #SBATCH --time=0-00:30:00
+#SBATCH --gres=gpu:1
 
 mkdir -p slurm_logs
 
