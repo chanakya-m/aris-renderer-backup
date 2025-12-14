@@ -12,6 +12,11 @@ class SDFNetworkQAT(nn.Module):
         self.quant = QuantStub()
         self.dequant = DeQuantStub()
 
+        # These stubs are used to switch between INT8 and FP32 for the softplus,
+        # which cannot be done on INT8.
+        self.dequant_act = DeQuantStub()
+        self.quant_act = QuantStub()
+
         self.skip_in = skip_in
         dims = [d_in] + [d_hidden] * n_layers + [d_out]
         self.num_layers = len(dims)
@@ -28,27 +33,29 @@ class SDFNetworkQAT(nn.Module):
 
             if geometric_init:
                 if i == self.num_layers - 2:
-                    torch.nn.init.normal_(lin.weight, mean=np.sqrt(np.pi) / np.sqrt(in_dim), std=0.00001)
-                    torch.nn.init.constant_(lin.bias, -radius_init)
+                    nn.init.normal_(lin.weight, mean=np.sqrt(np.pi) / np.sqrt(in_dim), std=0.00001)
+                    nn.init.constant_(lin.bias, -radius_init)
                 else:
-                    torch.nn.init.constant_(lin.bias, 0.0)
-                    torch.nn.init.normal_(lin.weight, 0.0, np.sqrt(2) / np.sqrt(out_dim))
+                    nn.init.constant_(lin.bias, 0.0)
+                    nn.init.normal_(lin.weight, 0.0, np.sqrt(2) / np.sqrt(out_dim))
 
             self.layers.append(lin)
 
-        self.activation = nn.Softplus(beta=beta)
+        self.activation = nn.ReLU()
 
     def forward(self, input_coords):
         x = self.quant(input_coords)
 
         for i, layer in enumerate(self.layers):
             if i in self.skip_in:
-                x = torch.cat([x, self.quant(input_coords)], dim=-1) / math.sqrt(2)
+                x = torch.cat([x, self.quant(input_coords)], dim=-1) # Skip the scaling by 1/sqrt(2), and rely on network robustness
 
             x = layer(x)
 
             if i < len(self.layers) - 1:
+                # x = self.dequant_act(x)
                 x = self.activation(x)
+                # x = self.quant_act(x)
 
         x = self.dequant(x)
         return x
