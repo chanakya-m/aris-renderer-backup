@@ -48,6 +48,6 @@ Write a script to measure:
 ## Also:
 - speed
 - use a newer ML technique, compare quantization with IGR
-- use different meshes than just the bunny
+<!-- - use different meshes than just the bunny  -->
 - use even lower quantization
 - use a sparser pointcloud
