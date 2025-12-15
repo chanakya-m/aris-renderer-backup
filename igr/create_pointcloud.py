@@ -23,6 +23,10 @@ def create_pointcloud(mesh_path: str, num_points: int, noise_std_dev: float, out
         print(f"Mesh at {mesh_path} has no vertices.")
         return
 
+    if not mesh.has_vertex_normals():
+        print("Mesh has no normals. Computing vertex normals...")
+        mesh.compute_vertex_normals()
+
     print(f"Sampling {num_points}")
     pcd = mesh.sample_points_poisson_disk(number_of_points = num_points)
     points = np.asarray(pcd.points)

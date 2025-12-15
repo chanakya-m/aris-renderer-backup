@@ -104,7 +104,8 @@ def train(args):
             os.makedirs("checkpoints", exist_ok=True)
             torch.save(model.state_dict(), f"checkpoints/igr_step_{step}.pth")
 
-    torch.save(model.state_dict(), "checkpoints/igr_final.pth")
+    input_filename = os.path.basename(args.input)
+    torch.save(model.state_dict(), f"checkpoints/igr_final_{os.path.splitext(input_filename)[0]}.pth")
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()

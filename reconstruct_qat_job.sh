@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-#SBATCH --job-name=rec
+#SBATCH --job-name=rec_qat
 #SBATCH --account=class
 #SBATCH --partition=class
 #SBATCH --output=slurm_logs/slurm-%j.out
@@ -28,30 +28,9 @@ conda activate aris-3
 
 cd /fs/classhomes/cmaddine/aris-renderer-backup/igr
 
-python reconstruct_igr.py \
-    --checkpoint checkpoints/igr_final_armadillo_100000.pth \
-    --output data/armadillo/armadillo_reconstructed.ply \
-    --resolution 256
-
-python reconstruct_igr.py \
-    --checkpoint checkpoints/igr_final_bunny_100000.pth \
-    --output data/bunny/bunny_reconstructed.ply \
-    --resolution 256
-
-python reconstruct_igr.py \
-    --checkpoint checkpoints/igr_final_cow_100000.pth \
-    --output data/cow/cow_reconstructed.ply \
-    --resolution 256
-
-python reconstruct_igr.py \
-    --checkpoint checkpoints/igr_final_dragon_100000.pth \
-    --output data/dragon/dragon_reconstructed.ply \
-    --resolution 256
-
-python reconstruct_igr.py \
-    --checkpoint checkpoints/igr_final_teapot_100000.pth \
-    --output data/teapot/teapot_reconstructed.ply \
-    --resolution 256
+python reconstruct_qat.py \
+    --checkpoint checkpoints/igr_int8.pth \
+    --output data/bunny/bunny_int8.ply
 
 echo "======================================================"
 echo "Job finished"
