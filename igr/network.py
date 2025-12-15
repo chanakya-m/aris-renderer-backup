@@ -39,7 +39,7 @@ class SDFNetwork(nn.Module):
 
             self.layers.append(lin)
 
-        self.activation = nn.Softplus(beta=beta)
+        self.activation = nn.LeakyReLU()
 
     def forward(self, input_coords):
         x = input_coords

@@ -12,23 +12,23 @@
 #SBATCH --time=0-00:30:00
 #SBATCH --gres=gpu:1
 
-# module load cuda/12.1.1
+module load cuda/12.1.1
 
-# mkdir -p slurm_logs
+mkdir -p slurm_logs
 
-# echo "======================================================"
-# echo "Starting job      : $SLURM_JOB_ID"
-# echo "Running on node   : $SLURMD_NODENAME"
-# echo "Assigned GPU      : $CUDA_VISIBLE_DEVICES"
-# echo "======================================================"
+echo "======================================================"
+echo "Starting job      : $SLURM_JOB_ID"
+echo "Running on node   : $SLURMD_NODENAME"
+echo "Assigned GPU      : $CUDA_VISIBLE_DEVICES"
+echo "======================================================"
 
-# conda init
-# # source $(conda info --base)/etc/profile.d/conda.sh
-# conda activate aris-3
+conda init
+# source $(conda info --base)/etc/profile.d/conda.sh
+conda activate aris-3
 
-# cd /fs/classhomes/cmaddine/aris-renderer-backup/igr
+cd /fs/classhomes/cmaddine/aris-renderer-backup/igr
 
-cd /Users/mchanakya/Projects/School/CMSC740/aris-renderer/igr
+# cd /Users/mchanakya/Projects/School/CMSC740/aris-renderer/igr
 
 python train_igr_qat.py --input data/bunny/bunny_watertight_100000.npz --checkpoint checkpoints/igr_final_bunny_watertight_100000.pth --steps 500
 python reconstruct_igr_qat.py \
