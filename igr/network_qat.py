@@ -41,7 +41,7 @@ class SDFNetworkQAT(nn.Module):
 
             self.layers.append(lin)
 
-        self.activation = nn.ReLU()
+        self.activation = nn.LeakyReLU()
 
     def forward(self, input_coords):
         x = self.quant(input_coords)
