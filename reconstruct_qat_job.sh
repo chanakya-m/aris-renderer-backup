@@ -35,9 +35,9 @@ cd /fs/classhomes/cmaddine/aris-renderer-backup/igr
 #     --checkpoint checkpoints/igr_final_armadillo_watertight_100000.pth \
 #     --output data/armadillo/armadillo_watertight_100000_int8.ply
 
-python train_igr_qat.py --input data/bunny/bunny_watertight_100000.npz --checkpoint checkpoints/igr_final_bunny_watertight_100000.pth --steps 500
+python train_igr_qat.py --input data/bunny/bunny_watertight_100000.npz --checkpoint checkpoints/igr_exp_bunny_watertight_100000.pth --steps 500
 python reconstruct_igr_qat.py \
-    --checkpoint checkpoints/igr_final_bunny_watertight_100000.pth \
+    --checkpoint checkpoints/igr_exp_bunny_watertight_100000_int8.pth \
     --output data/bunny/bunny_watertight_100000_int8.ply
 
 # python train_igr_qat.py --input data/cow/cow_watertight_100000.npz --checkpoint checkpoints/igr_final_cow_watertight_100000.pth --steps 500

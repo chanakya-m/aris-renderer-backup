@@ -30,27 +30,27 @@ cd /fs/classhomes/cmaddine/aris-renderer-backup/igr
 
 # python reconstruct_igr.py \
 #     --checkpoint checkpoints/igr_final_armadillo_100000_LRL.pth \
-#     --output data/armadillo/armadillo_reconstructed.ply \
+#     --output data/armadillo/armadillo_100000_reconstructed.ply \
 #     --resolution 256
 
 python reconstruct_igr.py \
-    --checkpoint checkpoints/igr_final_bunny_watertight_100000_LRL.pth \
-    --output data/bunny/bunny_reconstructed.ply \
+    --checkpoint checkpoints/igr_exp_bunny_watertight_100000.pth \
+    --output data/bunny/bunny_watertight_100000_reconstructed_LRL.ply \
     --resolution 256
 
 # python reconstruct_igr.py \
 #     --checkpoint checkpoints/igr_final_cow_100000_LRL.pth \
-#     --output data/cow/cow_reconstructed.ply \
+#     --output data/cow/cow_100000_reconstructed.ply \
 #     --resolution 256
 
 # python reconstruct_igr.py \
 #     --checkpoint checkpoints/igr_final_dragon_100000_LRL.pth \
-#     --output data/dragon/dragon_reconstructed.ply \
+#     --output data/dragon/dragon_100000_reconstructed.ply \
 #     --resolution 256
 
 # python reconstruct_igr.py \
 #     --checkpoint checkpoints/igr_final_teapot_100000_LRL.pth \
-#     --output data/teapot/teapot_reconstructed.ply \
+#     --output data/teapot/teapot_100000_reconstructed.ply \
 #     --resolution 256
 
 echo "======================================================"
