@@ -53,9 +53,9 @@ class SDFNetworkQAT(nn.Module):
             x = layer(x)
 
             if i < len(self.layers) - 1:
-                # x = self.dequant_act(x)
+                x = self.dequant_act(x)
                 x = self.activation(x)
-                # x = self.quant_act(x)
+                x = self.quant_act(x)
 
         x = self.dequant(x)
         return x

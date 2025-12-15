@@ -100,12 +100,12 @@ def train(args):
         pbar.set_description(f"L: {loss.item():.4f} | M: {loss_mnfld.item():.4f} | G: {loss_grad.item():.4f}")
 
         # Checkpointing
-        if step % args.save_interval == 0:
-            os.makedirs("checkpoints", exist_ok=True)
-            torch.save(model.state_dict(), f"checkpoints/igr_step_{step}.pth")
+        # if step % args.save_interval == 0:
+        #     os.makedirs("checkpoints", exist_ok=True)
+        #     torch.save(model.state_dict(), f"checkpoints/igr_step_{step}.pth")
 
     input_filename = os.path.basename(args.input)
-    torch.save(model.state_dict(), f"checkpoints/igr_final_{os.path.splitext(input_filename)[0]}.pth")
+    torch.save(model.state_dict(), f"checkpoints/igr_exp_{os.path.splitext(input_filename)[0]}.pth")
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()

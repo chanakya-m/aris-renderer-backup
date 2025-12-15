@@ -19,7 +19,7 @@ def reconstruct(args):
     model.eval()
     print(f"Model loaded in {time.time() - model_load_start:.2f}s")
 
-    # ===== Grid Creation =====
+    # Grid Creation
     grid_start = time.time()
     N = args.resolution
     voxel_origin = [-1, -1, -1]
@@ -37,7 +37,7 @@ def reconstruct(args):
     samples = samples.to(device)
 
 
-    # ===== Network Inference =====
+    # Network Inference
     print("Querying network...")
     sdf_values = torch.zeros(N ** 3)
 
@@ -69,22 +69,21 @@ def reconstruct(args):
     print(f"✓ Network inference in {total_inference_time:.2f}s "
           f"({(N**3)/total_inference_time:.0f} samples/sec)")
 
-    # ===== SDF Analysis =====
-    print(f"SDF Statistics:")
+    print(f"SDF statistics:")
     print(f"  Min: {sdf_values.min().item()}")
     print(f"  Max: {sdf_values.max().item()}")
     print(f"  Mean: {sdf_values.mean().item()}")
     print(f"  Non-zero: {(sdf_values != 0).sum().item()}")
 
     if sdf_values.min() > 0:
-        print("  FAILURE: All values are POSITIVE (outside surface).")
+        print("  Failure: All values are positive")
     elif sdf_values.max() < 0:
-        print("  FAILURE: All values are NEGATIVE (inside surface).")
+        print("  Failure: All values are negative")
     else:
-        print("  SUCCESS: Zero crossing detected!")
+        print("  Success: Zero crossing detected")
 
 
-    # ===== Marching Cubes =====
+    # Marching Cubes
     sdf_grid = sdf_values.reshape(N, N, N).numpy()
 
     print("Running Marching Cubes...")
@@ -100,7 +99,7 @@ def reconstruct(args):
         return
 
 
-    # ===== Mesh Processing =====
+    # Mesh Processing
     mesh_start = time.time()
 
     verts += np.array(voxel_origin)
@@ -118,7 +117,7 @@ def reconstruct(args):
     print(f"Mesh processed in {time.time() - mesh_start:.2f}s "
           f"(writing: {write_time:.2f}s)")
 
-    # ===== Total Time =====
+    # Total Time
     total_time = time.time() - total_start
     print(f"Total reconstruction time: {total_time:.2f}s")
     print(f"   Resolution: {args.resolution}³ = {N**3:,} samples")

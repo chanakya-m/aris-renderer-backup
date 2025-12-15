@@ -39,7 +39,6 @@ class SDFNetwork(nn.Module):
 
             self.layers.append(lin)
 
-        # Softplus with beta=100 like in the original IGR paper
         self.activation = nn.Softplus(beta=beta)
 
     def forward(self, input_coords):

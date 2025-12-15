@@ -84,7 +84,8 @@ def train_qat(args):
     quantized_model = torch.ao.quantization.convert(model)
 
     os.makedirs("checkpoints", exist_ok=True)
-    save_path = "checkpoints/igr_int8.pth"
+    input_filename = os.path.basename(args.input)
+    save_path = f"checkpoints/igr_int{os.path.splitext(input_filename)[0]}8.pth"
     torch.jit.save(torch.jit.script(quantized_model), save_path)
     print(f"Quantized model saved to {save_path}")
 

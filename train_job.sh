@@ -35,7 +35,7 @@ python train_igr.py \
 
 # python create_pointcloud.py --mesh data/bunny/bunny.obj
 python train_igr.py \
-    --input data/bunny/bunny_100000.npz
+    --input data/bunny/bunny_watertight_100000.npz
 
 
 # python create_pointcloud.py --mesh data/cow/cow.obj
