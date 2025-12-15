@@ -41,7 +41,7 @@ class SDFNetworkQAT(nn.Module):
 
             self.layers.append(lin)
 
-        self.activation = nn.Softplus(beta=beta)
+        self.activation = nn.Sigmoid()
 
     def forward(self, input_coords):
         x = self.quant(input_coords)
