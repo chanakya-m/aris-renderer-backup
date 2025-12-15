@@ -4,7 +4,7 @@ __pycache__/
 /data
 .DS_Store
 .vscode/launch.json
-/igr/data
+/igr/data/*/*
 !/igr/data/*/*.obj
 /slurm_logs
 /igr/report
