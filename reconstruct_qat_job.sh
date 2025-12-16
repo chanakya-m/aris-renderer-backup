@@ -30,9 +30,9 @@ cd /fs/classhomes/cmaddine/aris-renderer-backup/igr
 
 # cd /Users/mchanakya/Projects/School/CMSC740/aris-renderer/igr
 
-python train_igr_qat.py --input data/armadillo/armadillo_100000.npz --checkpoint checkpoints/igr_final_armadillo_100000.pth --steps 500 --bits 8
-python train_igr_qat.py --input data/armadillo/armadillo_50000.npz --checkpoint checkpoints/igr_final_armadillo_50000.pth --steps 500 --bits 8
-python train_igr_qat.py --input data/armadillo/armadillo_10000.npz --checkpoint checkpoints/igr_final_armadillo_10000.pth --steps 500 --bits 8
+python train_igr_qat.py --input data/armadillo/armadillo_100000.npz --checkpoint checkpoints/igr_final_armadillo_100000.pth --steps 300 --bits 8
+python train_igr_qat.py --input data/armadillo/armadillo_50000.npz --checkpoint checkpoints/igr_final_armadillo_50000.pth --steps 300 --bits 8
+python train_igr_qat.py --input data/armadillo/armadillo_10000.npz --checkpoint checkpoints/igr_final_armadillo_10000.pth --steps 300 --bits 8
 python reconstruct_igr_qat.py \
     --checkpoint checkpoints/igr_final_armadillo_100000_int8.pth \
     --output data/armadillo/armadillo_reconstructed_100000_int8.ply
@@ -43,9 +43,9 @@ python reconstruct_igr_qat.py \
     --checkpoint checkpoints/igr_final_armadillo_10000_int8.pth \
     --output data/armadillo/armadillo_reconstructed_10000_int8.ply
 
-python train_igr_qat.py --input data/bunny/bunny_100000.npz --checkpoint checkpoints/igr_final_bunny_100000.pth --steps 500 --bits 8
-python train_igr_qat.py --input data/bunny/bunny_50000.npz --checkpoint checkpoints/igr_final_bunny_50000.pth --steps 500 --bits 8
-python train_igr_qat.py --input data/bunny/bunny_10000.npz --checkpoint checkpoints/igr_final_bunny_10000.pth --steps 500 --bits 8
+python train_igr_qat.py --input data/bunny/bunny_100000.npz --checkpoint checkpoints/igr_final_bunny_100000.pth --steps 300 --bits 8
+python train_igr_qat.py --input data/bunny/bunny_50000.npz --checkpoint checkpoints/igr_final_bunny_50000.pth --steps 300 --bits 8
+python train_igr_qat.py --input data/bunny/bunny_10000.npz --checkpoint checkpoints/igr_final_bunny_10000.pth --steps 300 --bits 8
 python reconstruct_igr_qat.py \
     --checkpoint checkpoints/igr_final_bunny_100000_int8.pth \
     --output data/bunny/bunny_100000_reconstructed_int8.ply
@@ -56,9 +56,9 @@ python reconstruct_igr_qat.py \
     --checkpoint checkpoints/igr_bunny_10000_int8.pth \
     --output data/bunny/bunny_10000_reconstructed_int8.ply
 
-python train_igr_qat.py --input data/cow/cow_100000.npz --checkpoint checkpoints/igr_final_cow_100000.pth --steps 500 --bits 8
-python train_igr_qat.py --input data/cow/cow_50000.npz --checkpoint checkpoints/igr_final_cow_50000.pth --steps 500 --bits 8
-python train_igr_qat.py --input data/cow/cow_10000.npz --checkpoint checkpoints/igr_final_cow_50000.pth --steps 500 --bits 8
+python train_igr_qat.py --input data/cow/cow_100000.npz --checkpoint checkpoints/igr_final_cow_100000.pth --steps 300 --bits 8
+python train_igr_qat.py --input data/cow/cow_50000.npz --checkpoint checkpoints/igr_final_cow_50000.pth --steps 300 --bits 8
+python train_igr_qat.py --input data/cow/cow_10000.npz --checkpoint checkpoints/igr_final_cow_50000.pth --steps 300 --bits 8
 python reconstruct_igr_qat.py \
     --checkpoint checkpoints/igr_final_cow_100000_int8.pth \
     --output data/cow/cow_100000_reconstructed_int8.ply
@@ -69,9 +69,9 @@ python reconstruct_igr_qat.py \
     --checkpoint checkpoints/igr_final_cow_10000_int8.pth \
     --output data/cow/cow_10000_reconstructed_int8.ply
 
-python train_igr_qat.py --input data/dragon/dragon_100000.npz --checkpoint checkpoints/igr_final_dragon_100000.pth --steps 500 --bits 8
-python train_igr_qat.py --input data/dragon/dragon_50000.npz --checkpoint checkpoints/igr_final_dragon_100000.pth --steps 500 --bits 8
-python train_igr_qat.py --input data/dragon/dragon_10000.npz --checkpoint checkpoints/igr_final_dragon_100000.pth --steps 500 --bits 8
+python train_igr_qat.py --input data/dragon/dragon_100000.npz --checkpoint checkpoints/igr_final_dragon_100000.pth --steps 300 --bits 8
+python train_igr_qat.py --input data/dragon/dragon_50000.npz --checkpoint checkpoints/igr_final_dragon_100000.pth --steps 300 --bits 8
+python train_igr_qat.py --input data/dragon/dragon_10000.npz --checkpoint checkpoints/igr_final_dragon_100000.pth --steps 300 --bits 8
 python reconstruct_igr_qat.py \
     --checkpoint checkpoints/igr_final_dragon_100000_int8.pth \
     --output data/dragon/dragon_100000_reconstructed_int8.ply
@@ -82,9 +82,9 @@ python reconstruct_igr_qat.py \
     --checkpoint checkpoints/igr_final_dragon_10000_int8.pth \
     --output data/dragon/dragon_10000_reconstructed_int8.ply
 
-python train_igr_qat.py --input data/teapot/teapot_100000.npz --checkpoint checkpoints/igr_final_teapot_100000.pth --steps 500 --bits 8
-python train_igr_qat.py --input data/teapot/teapot_50000.npz --checkpoint checkpoints/igr_final_teapot_100000.pth --steps 500 --bits 8
-python train_igr_qat.py --input data/teapot/teapot_10000.npz --checkpoint checkpoints/igr_final_teapot_100000.pth --steps 500 --bits 8
+python train_igr_qat.py --input data/teapot/teapot_100000.npz --checkpoint checkpoints/igr_final_teapot_100000.pth --steps 300 --bits 8
+python train_igr_qat.py --input data/teapot/teapot_50000.npz --checkpoint checkpoints/igr_final_teapot_100000.pth --steps 300 --bits 8
+python train_igr_qat.py --input data/teapot/teapot_10000.npz --checkpoint checkpoints/igr_final_teapot_100000.pth --steps 300 --bits 8
 python reconstruct_igr_qat.py \
     --checkpoint checkpoints/igr_final_teapot_100000_int8.pth \
     --output data/teapot/teapot_100000_reconstructed_int8.ply
