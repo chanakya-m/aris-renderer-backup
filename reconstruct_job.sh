@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-#SBATCH --job-name=rec50
+#SBATCH --job-name=rec100
 #SBATCH --account=class
 #SBATCH --partition=class
 #SBATCH --output=slurm_logs/slurm-%j.out
@@ -29,28 +29,28 @@ conda activate aris-3
 cd /fs/classhomes/cmaddine/aris-renderer-backup/igr
 
 python reconstruct_igr.py \
-    --checkpoint checkpoints/igr_final_armadillo_50000.pth \
-    --output data/armadillo/armadillo_50000_reconstructed.ply \
+    --checkpoint checkpoints/igr_final_armadillo_100000.pth \
+    --output data/armadillo/armadillo_100000_reconstructed.ply \
     --resolution 256
 
 python reconstruct_igr.py \
-    --checkpoint checkpoints/igr_final_bunny_50000.pth \
-    --output data/bunny/bunny_50000_reconstructed.ply \
+    --checkpoint checkpoints/igr_final_bunny_100000.pth \
+    --output data/bunny/bunny_100000_reconstructed.ply \
     --resolution 256
 
 python reconstruct_igr.py \
-    --checkpoint checkpoints/igr_final_cow_50000.pth \
-    --output data/cow/cow_50000_reconstructed.ply \
+    --checkpoint checkpoints/igr_final_cow_100000.pth \
+    --output data/cow/cow_100000_reconstructed.ply \
     --resolution 256
 
 python reconstruct_igr.py \
-    --checkpoint checkpoints/igr_final_dragon_50000.pth \
-    --output data/dragon/dragon_50000_reconstructed.ply \
+    --checkpoint checkpoints/igr_final_dragon_100000.pth \
+    --output data/dragon/dragon_100000_reconstructed.ply \
     --resolution 256
 
 python reconstruct_igr.py \
-    --checkpoint checkpoints/igr_final_teapot_50000.pth \
-    --output data/teapot/teapot_50000_reconstructed.ply \
+    --checkpoint checkpoints/igr_final_teapot_100000.pth \
+    --output data/teapot/teapot_100000_reconstructed.ply \
     --resolution 256
 
 echo "======================================================"
