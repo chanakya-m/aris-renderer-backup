@@ -28,29 +28,29 @@ conda activate aris-3
 
 cd /fs/classhomes/cmaddine/aris-renderer-backup/igr
 
-# # python create_pointcloud.py --mesh data/armadillo/armadillo.obj
-# python train_igr.py \
-#     --input data/armadillo/armadillo_100000.npz
+# python create_pointcloud.py --mesh data/armadillo/armadillo.obj
+python train_igr.py \
+    --input data/armadillo/armadillo_100000.npz
 
 
 # python create_pointcloud.py --mesh data/bunny/bunny.obj
 python train_igr.py \
-    --input data/bunny/bunny_watertight_100000.npz
+    --input data/bunny/bunny_100000.npz
 
 
-# # python create_pointcloud.py --mesh data/cow/cow.obj
-# python train_igr.py \
-#     --input data/cow/cow_100000.npz
+# python create_pointcloud.py --mesh data/cow/cow.obj
+python train_igr.py \
+    --input data/cow/cow_100000.npz
 
 
-# # python create_pointcloud.py --mesh data/dragon/dragon.obj
-# python train_igr.py \
-#     --input data/dragon/dragon_100000.npz
+# python create_pointcloud.py --mesh data/dragon/dragon.obj
+python train_igr.py \
+    --input data/dragon/dragon_100000.npz
 
 
-# # python create_pointcloud.py --mesh data/teapot/teapot.obj
-# python train_igr.py \
-#     --input data/teapot/teapot_100000.npz
+# python create_pointcloud.py --mesh data/teapot/teapot.obj
+python train_igr.py \
+    --input data/teapot/teapot_100000.npz
 
 
 echo "======================================================"

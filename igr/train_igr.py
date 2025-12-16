@@ -46,7 +46,6 @@ def train(args):
 
     optimizer = optim.Adam(model.parameters(), lr=args.lr)
 
-    # decay LR by factor of 0.5 every 'decay_steps' epochs (matches their logic roughly)
     scheduler = optim.lr_scheduler.StepLR(optimizer, step_size=args.decay_steps, gamma=0.5)
 
     model.train()
@@ -89,23 +88,17 @@ def train(args):
         # Combine
         loss = loss_mnfld + (args.lambda_grad * loss_grad) + (args.lambda_normals * loss_normals)
 
-        # Optimization
         optimizer.zero_grad()
         loss.backward()
         optimizer.step()
 
-        # Step scheduler
         scheduler.step()
 
         pbar.set_description(f"L: {loss.item():.4f} | M: {loss_mnfld.item():.4f} | G: {loss_grad.item():.4f}")
 
-        # Checkpointing
-        # if step % args.save_interval == 0:
-        #     os.makedirs("checkpoints", exist_ok=True)
-        #     torch.save(model.state_dict(), f"checkpoints/igr_step_{step}.pth")
 
     input_filename = os.path.basename(args.input)
-    torch.save(model.state_dict(), f"checkpoints/igr_exp_{os.path.splitext(input_filename)[0]}_LRL.pth")
+    torch.save(model.state_dict(), f"checkpoints/igr_final_{os.path.splitext(input_filename)[0]}.pth")
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
