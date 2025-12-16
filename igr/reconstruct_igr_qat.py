@@ -7,9 +7,11 @@ import time
 import os
 
 def reconstruct(args):
+    # Quantized models run on CPU
     device = torch.device("cpu")
     print(f"Reconstructing QUANTIZED model with resolution {args.resolution} on {device}...")
 
+    # Set engine
     torch.backends.quantized.engine = 'qnnpack'
 
     total_start = time.time()
