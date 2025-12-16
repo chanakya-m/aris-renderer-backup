@@ -28,32 +28,42 @@ conda activate aris-3
 
 cd /fs/classhomes/cmaddine/aris-renderer-backup/igr
 
-python create_pointcloud.py --mesh data/armadillo/armadillo.obj --num_points 50000
-python create_pointcloud.py --mesh data/armadillo/armadillo.obj --num_points 10000
+# python create_pointcloud.py --mesh data/armadillo/armadillo.obj --num_points 100000
+# python create_pointcloud.py --mesh data/armadillo/armadillo.obj --num_points 10000
+# python create_pointcloud.py --mesh data/armadillo/armadillo.obj --num_points 50000
+python train_igr.py --input data/armadillo/armadillo_100000.npz
 python train_igr.py --input data/armadillo/armadillo_50000.npz
 python train_igr.py --input data/armadillo/armadillo_10000.npz
 
 
-python create_pointcloud.py --mesh data/bunny/bunny.obj --num_points 50000
-python create_pointcloud.py --mesh data/bunny/bunny.obj --num_points 10000
+# python create_pointcloud.py --mesh data/bunny/bunny.obj --num_points 100000
+# python create_pointcloud.py --mesh data/bunny/bunny.obj --num_points 50000
+# python create_pointcloud.py --mesh data/bunny/bunny.obj --num_points 10000
+python train_igr.py --input data/bunny/bunny_100000.npz
 python train_igr.py --input data/bunny/bunny_50000.npz
 python train_igr.py --input data/bunny/bunny_10000.npz
 
 
-python create_pointcloud.py --mesh data/cow/cow.obj --num_points 50000
-python create_pointcloud.py --mesh data/cow/cow.obj --num_points 10000
+# python create_pointcloud.py --mesh data/cow/cow.obj --num_points 100000
+# python create_pointcloud.py --mesh data/cow/cow.obj --num_points 50000
+# python create_pointcloud.py --mesh data/cow/cow.obj --num_points 10000
+python train_igr.py --input data/cow/cow_100000.npz
 python train_igr.py --input data/cow/cow_50000.npz
 python train_igr.py --input data/cow/cow_10000.npz
 
 
-python create_pointcloud.py --mesh data/dragon/dragon.obj --num_points 50000
-python create_pointcloud.py --mesh data/dragon/dragon.obj --num_points 10000
+# python create_pointcloud.py --mesh data/dragon/dragon.obj --num_points 100000
+# python create_pointcloud.py --mesh data/dragon/dragon.obj --num_points 50000
+# python create_pointcloud.py --mesh data/dragon/dragon.obj --num_points 10000
+python train_igr.py --input data/dragon/dragon_100000.npz
 python train_igr.py --input data/dragon/dragon_50000.npz
 python train_igr.py --input data/dragon/dragon_10000.npz
 
 
-python create_pointcloud.py --mesh data/teapot/teapot.obj --num_points 50000
-python create_pointcloud.py --mesh data/teapot/teapot.obj --num_points 10000
+# python create_pointcloud.py --mesh data/teapot/teapot.obj --num_points 100000
+# python create_pointcloud.py --mesh data/teapot/teapot.obj --num_points 50000
+# python create_pointcloud.py --mesh data/teapot/teapot.obj --num_points 10000
+python train_igr.py --input data/teapot/teapot_100000.npz
 python train_igr.py --input data/teapot/teapot_50000.npz
 python train_igr.py --input data/teapot/teapot_10000.npz
 
